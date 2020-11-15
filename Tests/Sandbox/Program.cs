@@ -5,6 +5,7 @@
     using System.IO;
     using System.Threading.Tasks;
 
+    using CommandLine;
     using Gradebook.Data;
     using Gradebook.Data.Common;
     using Gradebook.Data.Common.Repositories;
@@ -13,9 +14,6 @@
     using Gradebook.Data.Seeding;
     using Gradebook.Services.Data;
     using Gradebook.Services.Messaging;
-
-    using CommandLine;
-
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
