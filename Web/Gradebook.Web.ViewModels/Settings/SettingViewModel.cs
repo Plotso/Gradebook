@@ -1,9 +1,8 @@
 ﻿namespace Gradebook.Web.ViewModels.Settings
 {
-    using Gradebook.Data.Models;
-    using Gradebook.Services.Mapping;
-
     using AutoMapper;
+    using Data.Models;
+    using Services.Mapping;
 
     public class SettingViewModel : IMapFrom<Setting>, IHaveCustomMappings
     {

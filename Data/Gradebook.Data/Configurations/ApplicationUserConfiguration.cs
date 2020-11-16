@@ -1,8 +1,8 @@
 ﻿namespace Gradebook.Data.Configurations
 {
-    using Gradebook.Data.Models;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using Models;
 
     public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {

@@ -1,9 +1,8 @@
 ﻿namespace Gradebook.Web.Areas.Administration.Controllers
 {
-    using Gradebook.Services.Data;
-    using Gradebook.Web.ViewModels.Administration.Dashboard;
-
     using Microsoft.AspNetCore.Mvc;
+    using Services.Data;
+    using ViewModels.Administration.Dashboard;
 
     public class DashboardController : AdministrationController
     {
@@ -16,8 +15,8 @@
 
         public IActionResult Index()
         {
-            var viewModel = new IndexViewModel { SettingsCount = this.settingsService.GetCount(), };
-            return this.View(viewModel);
+            var viewModel = new IndexViewModel { SettingsCount = settingsService.GetCount(), };
+            return View(viewModel);
         }
     }
 }

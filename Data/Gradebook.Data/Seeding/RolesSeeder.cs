@@ -3,12 +3,10 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
     using Gradebook.Common;
-    using Gradebook.Data.Models;
-
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
+    using Models;
 
     internal class RolesSeeder : ISeeder
     {
@@ -17,6 +15,10 @@
             var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
             await SeedRoleAsync(roleManager, GlobalConstants.AdministratorRoleName);
+            // await SeedRoleAsync(roleManager, GlobalConstants.PrincipalRoleName);
+            await SeedRoleAsync(roleManager, GlobalConstants.TeacherRoleName);
+            await SeedRoleAsync(roleManager, GlobalConstants.StudentRoleName);
+            await SeedRoleAsync(roleManager, GlobalConstants.ParentRoleName);
         }
 
         private static async Task SeedRoleAsync(RoleManager<ApplicationRole> roleManager, string roleName)

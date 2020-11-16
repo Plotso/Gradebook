@@ -1,6 +1,6 @@
 ﻿namespace Gradebook.Data.Models
 {
-    using Gradebook.Data.Common.Models;
+    using Common.Models;
 
     public class Setting : BaseDeletableModel<int>
     {

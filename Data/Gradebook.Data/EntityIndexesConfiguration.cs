@@ -1,9 +1,7 @@
 ﻿namespace Gradebook.Data
 {
     using System.Linq;
-
-    using Gradebook.Data.Common.Models;
-
+    using Common.Models;
     using Microsoft.EntityFrameworkCore;
 
     internal static class EntityIndexesConfiguration

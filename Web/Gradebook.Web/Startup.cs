@@ -1,18 +1,12 @@
 ﻿namespace Gradebook.Web
 {
     using System.Reflection;
-
-    using Gradebook.Data;
-    using Gradebook.Data.Common;
-    using Gradebook.Data.Common.Repositories;
-    using Gradebook.Data.Models;
-    using Gradebook.Data.Repositories;
-    using Gradebook.Data.Seeding;
-    using Gradebook.Services.Data;
-    using Gradebook.Services.Mapping;
-    using Gradebook.Services.Messaging;
-    using Gradebook.Web.ViewModels;
-
+    using Data;
+    using Data.Common;
+    using Data.Common.Repositories;
+    using Data.Models;
+    using Data.Repositories;
+    using Data.Seeding;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -21,6 +15,10 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Services.Data;
+    using Services.Mapping;
+    using Services.Messaging;
+    using ViewModels;
 
     public class Startup
     {
@@ -35,7 +33,7 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -54,7 +52,7 @@
                     }).AddRazorRuntimeCompilation();
             services.AddRazorPages();
 
-            services.AddSingleton(this.configuration);
+            services.AddSingleton(configuration);
 
             // Data repositories
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));

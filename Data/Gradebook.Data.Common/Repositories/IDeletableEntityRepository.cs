@@ -2,8 +2,7 @@
 {
     using System.Linq;
     using System.Threading.Tasks;
-
-    using Gradebook.Data.Common.Models;
+    using Models;
 
     public interface IDeletableEntityRepository<TEntity> : IRepository<TEntity>
         where TEntity : class, IDeletableEntity

@@ -1,10 +1,9 @@
 ﻿namespace Gradebook.Web.Areas.Administration.Controllers
 {
-    using Gradebook.Common;
-    using Gradebook.Web.Controllers;
-
+    using Common;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Web.Controllers;
 
     [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
     [Area("Administration")]

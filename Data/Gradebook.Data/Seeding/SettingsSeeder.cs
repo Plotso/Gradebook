@@ -3,8 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-
-    using Gradebook.Data.Models;
+    using Models;
 
     internal class SettingsSeeder : ISeeder
     {

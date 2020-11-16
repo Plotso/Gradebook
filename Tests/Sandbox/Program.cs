@@ -4,7 +4,6 @@
     using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
-
     using CommandLine;
     using Gradebook.Data;
     using Gradebook.Data.Common;

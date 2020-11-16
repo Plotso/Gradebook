@@ -3,7 +3,6 @@
     using System;
     using System.Diagnostics;
     using System.Linq;
-
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -19,10 +18,10 @@
 
         public SeleniumServerFactory()
         {
-            this.ClientOptions.BaseAddress = new Uri("https://localhost"); // will follow redirects by default
-            this.CreateServer(this.CreateWebHostBuilder());
+            ClientOptions.BaseAddress = new Uri("https://localhost"); // will follow redirects by default
+            CreateServer(CreateWebHostBuilder());
 
-            this.process = new Process
+            process = new Process
                        {
                            StartInfo = new ProcessStartInfo
                                        {
@@ -31,16 +30,16 @@
                                            UseShellExecute = true,
                                        },
                        };
-            this.process.Start();
+            process.Start();
         }
 
         public string RootUri { get; set; }
 
         protected override TestServer CreateServer(IWebHostBuilder builder)
         {
-            this.host = builder.Build();
-            this.host.Start();
-            this.RootUri = this.host.ServerFeatures.Get<IServerAddressesFeature>().Addresses.LastOrDefault(); // Last is https://localhost:5001!
+            host = builder.Build();
+            host.Start();
+            RootUri = host.ServerFeatures.Get<IServerAddressesFeature>().Addresses.LastOrDefault(); // Last is https://localhost:5001!
 
             // Fake Server we won't use...this is lame. Should be cleaner, or a utility class
             return new TestServer(new WebHostBuilder().UseStartup<FakeStartup>());
@@ -58,8 +57,8 @@
             base.Dispose(disposing);
             if (disposing)
             {
-                this.host.Dispose();
-                this.process.CloseMainWindow(); // Be sure to stop Selenium Standalone
+                host.Dispose();
+                process.CloseMainWindow(); // Be sure to stop Selenium Standalone
             }
         }
 

@@ -2,13 +2,11 @@
 {
     using System;
     using System.Threading.Tasks;
-
-    using Gradebook.Data.Common.Repositories;
-    using Gradebook.Data.Models;
-    using Gradebook.Services.Data;
-    using Gradebook.Web.ViewModels.Settings;
-
+    using Data.Common.Repositories;
+    using Data.Models;
     using Microsoft.AspNetCore.Mvc;
+    using Services.Data;
+    using ViewModels.Settings;
 
     public class SettingsController : BaseController
     {
@@ -24,9 +22,9 @@
 
         public IActionResult Index()
         {
-            var settings = this.settingsService.GetAll<SettingViewModel>();
+            var settings = settingsService.GetAll<SettingViewModel>();
             var model = new SettingsListViewModel { Settings = settings };
-            return this.View(model);
+            return View(model);
         }
 
         public async Task<IActionResult> InsertSetting()
@@ -34,10 +32,10 @@
             var random = new Random();
             var setting = new Setting { Name = $"Name_{random.Next()}", Value = $"Value_{random.Next()}" };
 
-            await this.repository.AddAsync(setting);
-            await this.repository.SaveChangesAsync();
+            await repository.AddAsync(setting);
+            await repository.SaveChangesAsync();
 
-            return this.RedirectToAction(nameof(this.Index));
+            return RedirectToAction(nameof(Index));
         }
     }
 }
