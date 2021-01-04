@@ -27,6 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
       <PrivateAssets>all</PrivateAssets>
@@ -40,6 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Gradebook.Common\Gradebook.Common.csproj" />
+    <ProjectReference Include="..\..\Services\Gradebook.Services.Data\Gradebook.Services.Data.csproj" />
     <ProjectReference Include="..\Gradebook.Data.Common\Gradebook.Data.Common.csproj" />
     <ProjectReference Include="..\Gradebook.Data.Models\Gradebook.Data.Models.csproj" />
   </ItemGroup>

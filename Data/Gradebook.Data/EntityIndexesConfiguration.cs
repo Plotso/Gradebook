@@ -1,6 +1,7 @@
 ﻿namespace Gradebook.Data
 {
     using System.Linq;
+    using Common;
     using Common.Models;
     using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,16 @@
     {
         public static void Configure(ModelBuilder modelBuilder)
         {
+            // UniqueID index
+            var personEntities = modelBuilder.Model.GetEntityTypes().Where(e => e.ClrType != null && typeof(BasePersonModel).IsAssignableFrom(e.ClrType));
+            foreach (var entity in personEntities)
+            {
+                modelBuilder
+                    .Entity(entity.ClrType)
+                    .HasIndex(nameof(BasePersonModel.UniqueId))
+                    .IsUnique();
+            }
+
             // IDeletableEntity.IsDeleted index
             var deletableEntityTypes = modelBuilder.Model
                 .GetEntityTypes()

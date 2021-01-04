@@ -10,6 +10,7 @@
     using Gradebook.Data.Models;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using Models.Grades;
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
@@ -24,6 +25,26 @@
         }
 
         public DbSet<Setting> Settings { get; set; }
+        
+        public DbSet<School> Schools { get; set; }
+
+        public DbSet<Principal> Principals { get; set; }
+
+        public DbSet<Student> Students { get; set; }
+
+        public DbSet<Parent> Parents { get; set; }
+
+        public DbSet<StudentParent> StudentParents { get; set; }
+
+        public DbSet<Teacher> Teachers { get; set; }
+
+        public DbSet<Class> Classes { get; set; }
+
+        public DbSet<Subject> Subjects { get; set; }
+
+        public DbSet<Grade> Grades { get; set; }
+
+        public DbSet<StudentSubject> StudentSubjects { get; set; }
 
         public override int SaveChanges() => SaveChanges(true);
 
@@ -71,6 +92,14 @@
             {
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
             }
+
+            builder
+                .Entity<StudentSubject>()
+                .HasKey(x => new { x.StudentId, x.SubjectId });
+
+            builder
+                .Entity<StudentParent>()
+                .HasKey(x => new { x.StudentId, x.ParentId });
         }
 
         private static void SetIsDeletedQueryFilter<T>(ModelBuilder builder)

@@ -26,6 +26,7 @@
                           {
                               new RolesSeeder(),
                               new SettingsSeeder(),
+                              new GradebookSeeder()
                           };
 
             foreach (var seeder in seeders)
