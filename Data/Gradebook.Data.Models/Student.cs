@@ -6,12 +6,13 @@
     using Common;
     using Common.Models;
 
-    public class Student : BasePersonModel//BaseDeletableModel<int>  //ToDo: Student should be of type IdentityUser so that he can login into the application || inherit ApplicationUser from Niki's skeleton
+    public class Student : BasePersonModel
     {
         private const int PINLength = 10;
 
         public Student()
         {
+            UserType = UserType.Student;
             StudentParents = new HashSet<StudentParent>();
             StudentSubjects = new HashSet<StudentSubject>();
         }
@@ -26,7 +27,7 @@
         public string Username { get; set; }
 
         [Required]
-        public string Email { get; set; }  //ToDo: Add email attribute?
+        public string Email { get; set; }
 
         [Required]
         public DateTime BirthDate { get; set; }
@@ -35,7 +36,7 @@
         [StringLength(PINLength, MinimumLength = PINLength)]
         public string PersonalIdentificationNumber { get; set; } //ToDo: Add custom validation attribute
 
-        public int? ClassId { get; set; }  //nullable because university students don't have class
+        public int? ClassId { get; set; } // nullable because university students don't have class
 
         public virtual Class Class { get; set; }
 

@@ -2,6 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using Services.Data;
+    using Services.Data.Interfaces;
     using ViewModels.Administration.Dashboard;
 
     public class DashboardController : AdministrationController

@@ -6,5 +6,7 @@
     {
         [Required]
         public string UniqueId { get; set; }
+
+        public UserType UserType { get; protected set; }
     }
 }

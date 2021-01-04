@@ -2,6 +2,8 @@
 {
     using System;
     using System.Threading;
+    using Common;
+    using Interfaces;
 
     public class IdGeneratorService : IIdGeneratorService
     {
@@ -12,13 +14,13 @@
             _idsCounter = 0;
         }
 
-        public string GeneratePrincipalId() => GenerateId('G');
+        public string GeneratePrincipalId() => GenerateId(GlobalConstants.PrincipalIdPrefix);
 
-        public string GenerateTeacherId() => GenerateId('T');
+        public string GenerateTeacherId() => GenerateId(GlobalConstants.TeacherIdPrefix);
 
-        public string GenerateParentId() => GenerateId('P');
+        public string GenerateParentId() => GenerateId(GlobalConstants.ParentIdPrefix);
 
-        public string GenerateStudentId() => GenerateId('S');
+        public string GenerateStudentId() => GenerateId(GlobalConstants.StudentIdPrefix);
 
 
         private string GenerateId(char firstLetter)

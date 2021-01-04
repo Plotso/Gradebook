@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Models;
     using Services.Data;
+    using Services.Data.Interfaces;
 
     public class GradebookSeeder : ISeeder
     {

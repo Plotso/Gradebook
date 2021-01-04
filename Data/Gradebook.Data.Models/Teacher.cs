@@ -6,6 +6,11 @@
 
     public class Teacher : BasePersonModel
     {
+        public Teacher()
+        {
+            UserType = UserType.Teacher;
+        }
+        
         [Required]
         public string FirstName { get; set; }
 

@@ -4,6 +4,7 @@
     using System.Linq;
     using Gradebook.Data.Common.Repositories;
     using Gradebook.Data.Models;
+    using Interfaces;
     using Mapping;
 
     public class SettingsService : ISettingsService

@@ -9,5 +9,6 @@
     [Area("Administration")]
     public class AdministrationController : BaseController
     {
+        //ToDo: Add logic for creation of new school & principal
     }
 }

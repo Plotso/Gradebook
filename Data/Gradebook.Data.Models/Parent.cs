@@ -7,6 +7,11 @@
 
     public class Parent : BasePersonModel
     {
+        public Parent()
+        {
+            UserType = UserType.Parent;
+        }
+
         [Required]
         public string FirstName { get; set; }
 

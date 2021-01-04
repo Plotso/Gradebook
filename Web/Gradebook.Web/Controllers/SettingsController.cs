@@ -6,6 +6,7 @@
     using Data.Models;
     using Microsoft.AspNetCore.Mvc;
     using Services.Data;
+    using Services.Data.Interfaces;
     using ViewModels.Settings;
 
     public class SettingsController : BaseController
