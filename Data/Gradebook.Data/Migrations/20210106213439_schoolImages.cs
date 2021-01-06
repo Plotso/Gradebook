@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Gradebook.Data.Migrations
 {
-    public partial class updatedModels : Migration
+    public partial class schoolImages : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -235,6 +235,7 @@ namespace Gradebook.Data.Migrations
                     Name = table.Column<string>(nullable: false),
                     Address = table.Column<string>(nullable: true),
                     Type = table.Column<int>(nullable: false),
+                    SchoolImageName = table.Column<string>(nullable: true),
                     PrincipalId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

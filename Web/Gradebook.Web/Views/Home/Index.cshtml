@@ -1,9 +1,54 @@
 ﻿@using Gradebook.Common
+@using Gradebook.Data.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 @{
     ViewData["Title"] = "Home Page";
+    
+    bool IsCurrentUserAdmin()
+    {
+        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+        var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+        return roles.Any(r => r == GlobalConstants.AdministratorRoleName);
+    }
+    
+    bool IsCurrentUserPrincipalOrAdmin()
+    {
+        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+        var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+        return roles.Any(r => r == GlobalConstants.AdministratorRoleName || r == GlobalConstants.PrincipalRoleName);
+    }
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to @GlobalConstants.SystemName!</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        if (IsCurrentUserAdmin())
+        {
+            <button type="button" class="btn btn-outline-success">
+                <a class="page-link-green" asp-area="Administration" asp-controller="Dashboard" asp-action="Index" title="Edit Comment">
+                    Dashboard 
+                </a>
+            </button>
+        }
+        
+        <h1>School name </h1>
+        <img src="images/schools/school.jpg">
+        <h3>Adress</h3>
+        
+        <button type="button" class="btn btn-outline-secondary">
+            Go to student page
+        </button>
+        
+        <button type="button" class="btn btn-outline-secondary">
+            Go to teacher page
+        </button>
+    }
+    else 
+    {
+        <h1 class="display-4">Welcome to @GlobalConstants.SystemName!</h1>
+        <p>Platform suited for a gradebook for students of all types - primary school, high school, university. Different sections for students, parents, teachers and principals are ensuring smooth and user-friendly experience.</p>
+    }
 </div>

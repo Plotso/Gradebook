@@ -10,5 +10,9 @@
     public class AdministrationController : BaseController
     {
         //ToDo: Add logic for creation of new school & principal
+        public IActionResult AddSchool()
+        {
+            return View();
+        }
     }
 }
