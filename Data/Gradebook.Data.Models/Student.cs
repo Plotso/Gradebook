@@ -23,11 +23,9 @@
         [Required]
         public string LastName { get; set; }
 
-        [Required]
-        public string Username { get; set; }
+        public string Username { get; set; }  // ToDo: Username is not required here, can be populated on user registration
 
-        [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } // ToDo: Username is not required here
 
         [Required]
         public DateTime BirthDate { get; set; }

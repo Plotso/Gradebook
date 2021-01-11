@@ -1,5 +1,6 @@
 ﻿namespace Gradebook.Services.Data
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Common;
     using Gradebook.Data.Common.Models;
@@ -68,6 +69,50 @@
             }
 
             return UserType.None;
+        }
+
+        public IEnumerable<School> GetUserSchoolsByUniqueId(string uniqueId)
+        {
+            if (!string.IsNullOrEmpty(uniqueId))
+            {
+                switch (uniqueId[0])
+                {
+                    case GlobalConstants.PrincipalIdPrefix:
+                        var principalRecord = _principalsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        if (principalRecord != null)
+                        {
+                            return new[] { principalRecord.School };
+                        }
+
+                        break;
+                    case GlobalConstants.TeacherIdPrefix:
+                        var teacherRecord = _teachersRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        if (teacherRecord != null)
+                        {
+                            return new[] { teacherRecord.School };
+                        }
+
+                        break;
+                    case GlobalConstants.StudentIdPrefix:
+                        var studentRecord = _studentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        if (studentRecord != null)
+                        {
+                            return new[] { studentRecord.School };
+                        }
+
+                        break;
+                    case GlobalConstants.ParentIdPrefix:
+                        var parentRecord = _parentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        if (parentRecord != null)
+                        {
+                            return parentRecord.StudentParents.Select(s => s.Student.School);
+                        }
+
+                        break;
+                }
+            }
+
+            return null;
         }
     }
 }

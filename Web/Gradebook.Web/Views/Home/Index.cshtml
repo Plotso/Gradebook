@@ -1,8 +1,10 @@
 ﻿@using Gradebook.Common
 @using Gradebook.Data.Models
 @using Microsoft.AspNetCore.Identity
+@using Castle.Core.Internal
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@model Gradebook.Web.ViewModels.Home.IndexViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -33,10 +35,15 @@
                 </a>
             </button>
         }
-        
-        <h1>School name </h1>
-        <img src="images/schools/school.jpg">
-        <h3>Adress</h3>
+
+        @foreach (var school in Model.Schools)
+        {
+            
+            <h1>@school.Name</h1>
+            <img src="images/schools/@school.SchoolImageName" width="50%">
+            <h3>@school.Address</h3>
+            <hr>
+        }
         
         <button type="button" class="btn btn-outline-secondary">
             Go to student page

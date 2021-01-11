@@ -72,6 +72,7 @@
             services.AddTransient<ISettingsService, SettingsService>();
             services.AddTransient<IIdGeneratorService, IdGeneratorService>();
             services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ISchoolsServices, SchoolsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
