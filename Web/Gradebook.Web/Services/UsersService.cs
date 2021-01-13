@@ -7,6 +7,8 @@
     using Data.Common.Models;
     using Data.Common.Repositories;
     using Data.Models;
+    using Gradebook.Services.Data;
+    using Gradebook.Services.Data.Interfaces;
     using Gradebook.Services.Mapping;
     using Interfaces;
     using ViewModels.InputModels;
@@ -17,17 +19,20 @@
         private readonly IDeletableEntityRepository<Teacher> _teachersRepository;
         private readonly IDeletableEntityRepository<Student> _studentsRepository;
         private readonly IDeletableEntityRepository<Parent> _parentsRepository;
+        private readonly IIdGeneratorService _idGeneratorService;
 
         public UsersService(
             IDeletableEntityRepository<Principal> principalsRepository,
             IDeletableEntityRepository<Teacher> teachersRepository,
             IDeletableEntityRepository<Student> studentsRepository,
-            IDeletableEntityRepository<Parent> parentsRepository)
+            IDeletableEntityRepository<Parent> parentsRepository,
+            IIdGeneratorService idGeneratorService)
         {
             _principalsRepository = principalsRepository;
             _teachersRepository = teachersRepository;
             _studentsRepository = studentsRepository;
             _parentsRepository = parentsRepository;
+            _idGeneratorService = idGeneratorService;
         }
 
         public async Task<T> CreatePrincipal<T>(PrincipalInputModel inputModel)
@@ -35,7 +40,8 @@
             var principal = new Principal
             {
                 FirstName = inputModel.FirstName,
-                LastName = inputModel.LastName
+                LastName = inputModel.LastName,
+                UniqueId = _idGeneratorService.GeneratePrincipalId()
             };
 
             await _principalsRepository.AddAsync(principal);

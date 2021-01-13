@@ -6,6 +6,7 @@
     using Data.Common.Models;
     using Data.Common.Repositories;
     using Data.Models;
+    using Gradebook.Services.Data.Interfaces;
     using Gradebook.Services.Mapping;
     using Interfaces;
     using ViewModels.InputModels;
@@ -14,11 +15,13 @@
     {
         private readonly IDeletableEntityRepository<Student> _studentsRepository;
         private readonly IDeletableEntityRepository<School> _schoolsRepository;
+        private readonly IIdGeneratorService _idGeneratorService;
 
-        public StudentsService(IDeletableEntityRepository<Student> studentsRepository, IDeletableEntityRepository<School> schoolsRepository)
+        public StudentsService(IDeletableEntityRepository<Student> studentsRepository, IDeletableEntityRepository<School> schoolsRepository, IIdGeneratorService idGeneratorService)
         {
             _studentsRepository = studentsRepository;
             _schoolsRepository = schoolsRepository;
+            _idGeneratorService = idGeneratorService;
         }
 
         public async Task<T> CreateStudent<T>(StudentInputModel inputModel)
@@ -37,7 +40,8 @@
                         BirthDate = inputModel.BirthDate,
                         PersonalIdentificationNumber = inputModel.PersonalIdentificationNumber,
                         School = school,
-                        Class = school.Classes.FirstOrDefault(c => c.Id == classId)
+                        Class = school.Classes.FirstOrDefault(c => c.Id == classId),
+                        UniqueId = _idGeneratorService.GenerateStudentId()
                     };
 
                     await _studentsRepository.AddAsync(student);

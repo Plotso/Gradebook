@@ -70,9 +70,9 @@
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
             // Application services
+            services.AddSingleton<IIdGeneratorService, IdGeneratorService>(); // MUST be singleton in order to generate uniqueIds
             services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddTransient<ISettingsService, SettingsService>();
-            services.AddTransient<IIdGeneratorService, IdGeneratorService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ISchoolsServices, SchoolsService>();
             services.AddTransient<IStudentsService, StudentsService>();

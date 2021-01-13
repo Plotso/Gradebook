@@ -68,7 +68,7 @@
             {
                 var confirmViewModel = await _studentsService.CreateStudent<ConfirmCreatedViewModel>(inputModel.Student);
 
-                return RedirectToAction("ConfirmCreated", "Home", confirmViewModel);
+                return RedirectToAction(nameof(ConfirmCreated), confirmViewModel);
             }
             catch (Exception e)
             {
@@ -76,6 +76,11 @@
                 return RedirectToAction("Error", "Home");
             }
 
+        }
+
+        public IActionResult ConfirmCreated(ConfirmCreatedViewModel viewModel)
+        {
+            return View(viewModel);
         }
 
         private IEnumerable<SelectListItem> SetClasses(IEnumerable<SchoolViewModel> schools)

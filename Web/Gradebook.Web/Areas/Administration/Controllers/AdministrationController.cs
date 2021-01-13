@@ -47,14 +47,18 @@
                 var confirmViewModel = await _usersService.CreatePrincipal<ConfirmCreatedViewModel>(inputModel.Principal);
                 await _schoolsServices.Create(inputModel.School, confirmViewModel.UniqueId);
 
-                return RedirectToAction("ConfirmCreated", "Home", confirmViewModel);
+                return RedirectToAction(nameof(ConfirmCreated), confirmViewModel);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "An exception occured during new school/principal record creation.");
                 return RedirectToAction("Error", "Home");
             }
+        }
 
+        public IActionResult ConfirmCreated(ConfirmCreatedViewModel viewModel)
+        {
+            return View(viewModel);
         }
     }
 }
