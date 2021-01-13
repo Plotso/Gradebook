@@ -1,0 +1,9 @@
+﻿@using Gradebook.Common
+@model Gradebook.Web.ViewModels.Administration.ConfirmCreatedViewModel
+@{
+    ViewData["Title"] = "Add school";
+}
+
+<h1>New @Model.UserType.ToString() has been created</h1>
+<h3>UniqueID: @Model.UniqueId</h3>
+<p>Please provide this unique to the person, so that he can register in the @GlobalConstants.SystemName</p>

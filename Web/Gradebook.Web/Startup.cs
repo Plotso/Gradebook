@@ -7,6 +7,10 @@
     using Data.Models;
     using Data.Repositories;
     using Data.Seeding;
+    using Gradebook.Services.Data;
+    using Gradebook.Services.Data.Interfaces;
+    using Gradebook.Services.Mapping;
+    using Gradebook.Services.Messaging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -15,10 +19,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Services.Data;
-    using Services.Data.Interfaces;
-    using Services.Mapping;
-    using Services.Messaging;
+    using Services;
+    using Services.Interfaces;
     using ViewModels;
 
     public class Startup
@@ -73,6 +75,8 @@
             services.AddTransient<IIdGeneratorService, IdGeneratorService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ISchoolsServices, SchoolsService>();
+            services.AddTransient<IStudentsService, StudentsService>();
+            services.AddTransient<IFileManagementService, FileManagementService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

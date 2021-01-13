@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\Data\Gradebook.Data.Common\Gradebook.Data.Common.csproj" />
     <ProjectReference Include="..\..\Data\Gradebook.Data.Models\Gradebook.Data.Models.csproj" />
     <ProjectReference Include="..\..\Gradebook.Common\Gradebook.Common.csproj" />
+    <ProjectReference Include="..\..\Web\Gradebook.Web.ViewModels\Gradebook.Web.ViewModels.csproj" />
     <ProjectReference Include="..\Gradebook.Services.Mapping\Gradebook.Services.Mapping.csproj" />
   </ItemGroup>
 

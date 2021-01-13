@@ -1,11 +1,14 @@
 ﻿namespace Gradebook.Web.Areas.Administration.Controllers
 {
+    using Common;
+    using Gradebook.Services.Data.Interfaces;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Services.Data;
-    using Services.Data.Interfaces;
-    using ViewModels.Administration.Dashboard;
+    using Web.ViewModels.Administration.Dashboard;
 
-    public class DashboardController : AdministrationController
+    [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
+    [Area("Administration")]
+    public class DashboardController : Controller
     {
         private readonly ISettingsService settingsService;
 

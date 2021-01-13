@@ -19,7 +19,7 @@
     using Microsoft.AspNetCore.Mvc.RazorPages;
     using Microsoft.AspNetCore.WebUtilities;
     using Microsoft.Extensions.Logging;
-    using Services.Data.Interfaces;
+    using Services.Interfaces;
 
     [AllowAnonymous]
     public class RegisterModel : PageModel
@@ -89,12 +89,15 @@
                             await _userManager.AddToRoleAsync(user, GlobalConstants.PrincipalRoleName);
                             break;
                         case UserType.Teacher:
+                            await _usersService.SetUserEmail(Input.UniqueGradebookId, Input.Email);
                             await _userManager.AddToRoleAsync(user, GlobalConstants.TeacherRoleName);
                             break;
                         case UserType.Student:
+                            await _usersService.SetUserEmail(Input.UniqueGradebookId, Input.Email);
                             await _userManager.AddToRoleAsync(user, GlobalConstants.StudentRoleName);
                             break;
                         case UserType.Parent:
+                            await _usersService.SetUserEmail(Input.UniqueGradebookId, Input.Email);
                             await _userManager.AddToRoleAsync(user, GlobalConstants.ParentRoleName);
                             break;
                     }

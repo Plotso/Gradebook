@@ -8,8 +8,9 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Services.Data.Interfaces;
+    using Services.Interfaces;
     using ViewModels;
+    using ViewModels.Administration;
     using ViewModels.Home;
 
     public class HomeController : BaseController
@@ -84,6 +85,11 @@
         public IActionResult PageNotFound()
         {
             return View();
+        }
+
+        public IActionResult ConfirmCreated(ConfirmCreatedViewModel viewModel)
+        {
+            return View(viewModel);
         }
 
         private async Task<bool> IsCurrentUserAdmin()

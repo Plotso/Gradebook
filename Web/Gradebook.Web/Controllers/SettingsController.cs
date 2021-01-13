@@ -4,9 +4,9 @@
     using System.Threading.Tasks;
     using Data.Common.Repositories;
     using Data.Models;
+    using Gradebook.Services.Data.Interfaces;
     using Microsoft.AspNetCore.Mvc;
-    using Services.Data;
-    using Services.Data.Interfaces;
+    using Services.Interfaces;
     using ViewModels.Settings;
 
     public class SettingsController : BaseController

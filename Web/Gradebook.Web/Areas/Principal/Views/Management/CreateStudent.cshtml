@@ -1,0 +1,60 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.StudentCreateInputModel
+@{
+    ViewData["Title"] = "Add student";
+}
+
+<h3 class="page-heading">Add new student</h3>
+<form asp-action="CreateStudent" method="post">
+    <div>
+        <label asp-for="Student.FirstName">Student's first name</label>
+        <input asp-for="Student.FirstName" class="form-control"/>
+        <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Student.LastName">Student's last name</label>
+        <input asp-for="Student.LastName" class="form-control"/>
+        <span asp-validation-for="Student.LastName" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Student.BirthDate"></label>
+        <input asp-for="Student.BirthDate" class="form-control" type="date"/>
+        <span asp-validation-for="Student.BirthDate" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Student.PersonalIdentificationNumber"></label>
+        <input asp-for="Student.PersonalIdentificationNumber" class="form-control"/>
+        <span asp-validation-for="Student.PersonalIdentificationNumber" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Student.SchoolId"></label>
+        <select asp-for="Student.SchoolId" 
+                class="form-control" 
+                asp-items="Model.Schools">
+            <option>Select school from list: </option>
+        </select>
+        <span asp-validation-for="Student.SchoolId" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Student.ClassId"></label>
+        <select asp-for="Student.ClassId" 
+                class="form-control" 
+                asp-items="Model.Classes">
+            <option>Select class from list (double check school is same as class): </option>
+        </select>
+        <span asp-validation-for="Student.ClassId" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Create Student"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

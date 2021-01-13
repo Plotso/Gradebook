@@ -1,12 +1,15 @@
-﻿namespace Gradebook.Services.Data
+﻿namespace Gradebook.Web.Services
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Common;
-    using Gradebook.Data.Common.Models;
-    using Gradebook.Data.Common.Repositories;
-    using Gradebook.Data.Models;
+    using Data.Common.Models;
+    using Data.Common.Repositories;
+    using Data.Models;
+    using Gradebook.Services.Mapping;
     using Interfaces;
+    using ViewModels.InputModels;
 
     public class UsersService : IUsersService
     {
@@ -25,6 +28,22 @@
             _teachersRepository = teachersRepository;
             _studentsRepository = studentsRepository;
             _parentsRepository = parentsRepository;
+        }
+
+        public async Task<T> CreatePrincipal<T>(PrincipalInputModel inputModel)
+        {
+            var principal = new Principal
+            {
+                FirstName = inputModel.FirstName,
+                LastName = inputModel.LastName
+            };
+
+            await _principalsRepository.AddAsync(principal);
+            await _principalsRepository.SaveChangesAsync();
+            BasePersonModel baseModel = _principalsRepository.All().FirstOrDefault(p =>
+                p.FirstName == inputModel.FirstName && p.LastName == inputModel.LastName);
+
+            return AutoMapperConfig.MapperInstance.Map<T>(baseModel);
         }
 
         public UserType GetUserTypeByUniqueId(string uniqueId)
@@ -69,6 +88,44 @@
             }
 
             return UserType.None;
+        }
+
+        public Principal GetPrincipalByUniqueId(string uniqueId)
+        {
+            var principalRecord = _principalsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+            return principalRecord;
+        }
+
+        public async Task SetUserEmail(string uniqueId, string email)
+        {
+            if (!string.IsNullOrEmpty(uniqueId))
+            {
+                switch (uniqueId[0])
+                {
+                    case GlobalConstants.TeacherIdPrefix:
+                        var teacherRecord = _teachersRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        teacherRecord.Email = email;
+                        _teachersRepository.Update(teacherRecord);
+                        await _teachersRepository.SaveChangesAsync();
+
+                        break;
+                    case GlobalConstants.StudentIdPrefix:
+                        var studentRecord = _studentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        studentRecord.Email = email;
+                        studentRecord.Username = email;
+                        _studentsRepository.Update(studentRecord);
+                        await _studentsRepository.SaveChangesAsync();
+
+                        break;
+                    case GlobalConstants.ParentIdPrefix:
+                        var parentRecord = _parentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        parentRecord.Email = email;
+                        _parentsRepository.Update(parentRecord);
+                        await _parentsRepository.SaveChangesAsync();
+
+                        break;
+                }
+            }
         }
 
         public IEnumerable<School> GetUserSchoolsByUniqueId(string uniqueId)
