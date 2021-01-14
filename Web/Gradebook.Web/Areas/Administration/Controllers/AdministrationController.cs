@@ -8,9 +8,11 @@
     using Microsoft.Extensions.Logging;
     using Principal;
     using Services.Interfaces;
+    using ViewModels;
     using ViewModels.InputModels;
     using Web.Controllers;
     using Web.ViewModels.Administration;
+    using Web.ViewModels.Home;
 
     [Authorize(Roles = GlobalConstants.AdministratorRoleName)]
     [Area("Administration")]
@@ -25,6 +27,16 @@
             _logger = logger;
             _usersService = usersService;
             _schoolsServices = schoolsServices;
+        }
+
+        public IActionResult SchoolsList()
+        {
+            var viewModel = new SchoolsListViewModel
+            {
+                Schools = _schoolsServices.GetAll<SchoolViewModel>()
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult CreateSchool()

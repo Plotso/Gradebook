@@ -26,13 +26,20 @@
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISchoolsServices _schoolsServices;
         private readonly IStudentsService _studentsService;
+        private readonly ITeachersService _teachersService;
 
-        public ManagementController(ILogger<ManagementController> logger, UserManager<ApplicationUser> userManager, ISchoolsServices schoolsServices, IStudentsService studentsService)
+        public ManagementController(
+            ILogger<ManagementController> logger,
+            UserManager<ApplicationUser> userManager,
+            ISchoolsServices schoolsServices,
+            IStudentsService studentsService,
+            ITeachersService teachersService)
         {
             _logger = logger;
             _userManager = userManager;
             _schoolsServices = schoolsServices;
             _studentsService = studentsService;
+            _teachersService = teachersService;
         }
         // ToDo: Add logic for creation of new Teacher/Student/Subject/Parent
 
@@ -78,6 +85,41 @@
 
         }
 
+        public async Task<IActionResult> CreateTeacher()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schools = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin);
+            var inputModel = new TeacherCreateInputModel
+            {
+                Schools = schools.Select(s => new SelectListItem(s.Name, s.Id.ToString())).ToList()
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTeacher(TeacherCreateInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.Teacher.SchoolId.IsNullOrEmpty())
+            {
+                //ToDo: in case of null school/class, return appropriate message or add model validation?
+                return View(inputModel);
+            }
+
+            try
+            {
+                var confirmViewModel = await _teachersService.CreateStudent<ConfirmCreatedViewModel>(inputModel.Teacher);
+
+                return RedirectToAction(nameof(ConfirmCreated), confirmViewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during new teacher record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
         public IActionResult ConfirmCreated(ConfirmCreatedViewModel viewModel)
         {
             return View(viewModel);
@@ -101,7 +143,7 @@
 
             return result;
         }
-        
+
         private async Task<bool> IsAdmin()
         {
             var user = await _userManager.GetUserAsync(User);

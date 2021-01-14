@@ -48,7 +48,7 @@
                     await _studentsRepository.SaveChangesAsync();
 
                     BasePersonModel baseModel = _studentsRepository.All().FirstOrDefault(p =>
-                        p.FirstName == inputModel.FirstName && p.LastName == inputModel.LastName && p.PersonalIdentificationNumber == inputModel.PersonalIdentificationNumber);
+                        p.FirstName == inputModel.FirstName && p.LastName == inputModel.LastName && p.PersonalIdentificationNumber == inputModel.PersonalIdentificationNumber); //ToDo: Just change to uniqueId from student above
 
                     return AutoMapperConfig.MapperInstance.Map<T>(baseModel);
                 }

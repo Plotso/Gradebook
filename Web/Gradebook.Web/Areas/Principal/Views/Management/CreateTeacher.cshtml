@@ -1,0 +1,38 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.TeacherCreateInputModel
+@{
+    ViewData["Title"] = "Add student";
+}
+
+<h3 class="page-heading">Add new student</h3>
+<form asp-action="CreateTeacher" method="post">
+    <div>
+        <label asp-for="Teacher.FirstName">Teacher's first name</label>
+        <input asp-for="Teacher.FirstName" class="form-control"/>
+        <span asp-validation-for="Teacher.FirstName" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Teacher.LastName">Teacher's last name</label>
+        <input asp-for="Teacher.LastName" class="form-control"/>
+        <span asp-validation-for="Teacher.LastName" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Teacher.SchoolId"></label>
+        <select asp-for="Teacher.SchoolId" 
+                class="form-control" 
+                asp-items="Model.Schools">
+            <option>Select school from list: </option>
+        </select>
+        <span asp-validation-for="Teacher.SchoolId" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Create Student"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

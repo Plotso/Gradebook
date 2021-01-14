@@ -1,0 +1,23 @@
+﻿@model Gradebook.Web.Areas.Administration.ViewModels.SchoolsListViewModel
+
+@{
+    ViewData["Title"] = "Schools List";
+}
+
+<div>
+  <ul class="list-unstyled">
+    @foreach (var school in @Model.Schools)
+    {
+      <li class="media  my-4">
+        <img class="mr-3" src="~/images/schools/@school.SchoolImageName" width="200" height="150" alt="school-image">
+        <div class="media-body">
+          <h5 class="mt-0 mb-1">@school.Name</h5>
+          <p> <span class="user-specific-info">Principal:</span> @school.PrincipalFirstName @school.PrincipalFirstName</p>
+          <p> <span class="user-specific-info">Address:</span> @school.Address</p>
+          <p> <span class="user-specific-info">Total classes:</span> @school.Classes.Count()</p>
+        </div>
+      </li>
+      <hr>
+    }
+  </ul>
+</div>

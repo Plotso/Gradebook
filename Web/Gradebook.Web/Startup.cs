@@ -76,6 +76,7 @@
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ISchoolsServices, SchoolsService>();
             services.AddTransient<IStudentsService, StudentsService>();
+            services.AddTransient<ITeachersService, TeachersService>();
             services.AddTransient<IFileManagementService, FileManagementService>();
         }
 

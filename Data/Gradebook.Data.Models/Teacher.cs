@@ -10,7 +10,7 @@
         {
             UserType = UserType.Teacher;
         }
-        
+
         [Required]
         public string FirstName { get; set; }
 

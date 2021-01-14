@@ -11,27 +11,27 @@
         <input asp-for="School.Name" class="form-control"/>
         <span asp-validation-for="School.Name" class="text-danger"></span>
     </div>
-    
+
     <div>
         <label asp-for="School.Address"></label>
         <input asp-for="School.Address" class="form-control"/>
         <span asp-validation-for="School.Address" class="text-danger"></span>
     </div>
-    
+
     <div>
         <label asp-for="School.Type"></label>
-        <select asp-for="School.Type" 
-                class="form-control" 
+        <select asp-for="School.Type"
+                class="form-control"
                 asp-items="Html.GetEnumSelectList<SchoolType>()">
             <option>Select school type...</option>
         </select>
         <span asp-validation-for="School.Type" class="text-danger"></span>
     </div>
-    
+
     <div>
         <label asp-for="School.SchoolImage">Upload picture of the school:</label>
     </div>
-    
+
     <div class="custom-file">
         <label asp-for="School.SchoolImage">Upload school picture:</label>
         <input type="file" class="custom-file-input" asp-for="School.SchoolImage" aria-describedby="fileHelpBlock">
@@ -41,13 +41,13 @@
         </small>
         <span asp-validation-for="School.SchoolImage" class="text-danger"></span>
     </div>
-    
+
     <div>
         <label asp-for="Principal.FirstName">Principal's first name</label>
         <input asp-for="Principal.FirstName" class="form-control"/>
         <span asp-validation-for="Principal.FirstName" class="text-danger"></span>
     </div>
-    
+
     <div>
         <label asp-for="Principal.LastName">Principal's last name</label>
         <input asp-for="Principal.LastName" class="form-control"/>
@@ -61,5 +61,11 @@
 </form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+            $(document).ready(function () {
+              bsCustomFileInput.init()
+            })            
+    </script>
 }
