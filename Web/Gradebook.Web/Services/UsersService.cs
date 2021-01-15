@@ -11,6 +11,7 @@
     using Gradebook.Services.Data.Interfaces;
     using Gradebook.Services.Mapping;
     using Interfaces;
+    using Microsoft.AspNetCore.Identity;
     using ViewModels.InputModels;
 
     public class UsersService : IUsersService
@@ -20,19 +21,25 @@
         private readonly IDeletableEntityRepository<Student> _studentsRepository;
         private readonly IDeletableEntityRepository<Parent> _parentsRepository;
         private readonly IIdGeneratorService _idGeneratorService;
+        private readonly IRepository<ApplicationUser> _usersRoRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public UsersService(
             IDeletableEntityRepository<Principal> principalsRepository,
             IDeletableEntityRepository<Teacher> teachersRepository,
             IDeletableEntityRepository<Student> studentsRepository,
             IDeletableEntityRepository<Parent> parentsRepository,
-            IIdGeneratorService idGeneratorService)
+            IIdGeneratorService idGeneratorService,
+            IRepository<ApplicationUser> usersRORepository, // ReadOnly because update operations should be executed by user manager
+            UserManager<ApplicationUser> userManager)
         {
             _principalsRepository = principalsRepository;
             _teachersRepository = teachersRepository;
             _studentsRepository = studentsRepository;
             _parentsRepository = parentsRepository;
             _idGeneratorService = idGeneratorService;
+            _usersRoRepository = usersRORepository;
+            _userManager = userManager;
         }
 
         public async Task<T> CreatePrincipal<T>(PrincipalInputModel inputModel)
@@ -106,6 +113,7 @@
         {
             if (!string.IsNullOrEmpty(uniqueId))
             {
+                var hasDeletedRecord = false;
                 switch (uniqueId[0])
                 {
                     case GlobalConstants.TeacherIdPrefix:
@@ -144,24 +152,28 @@
                         var principalRecord = _principalsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
                         _principalsRepository.Delete(principalRecord);
                         await _principalsRepository.SaveChangesAsync();
+                        await DeleteApplicationUserByUniqueId(uniqueId);
 
                         break;
                     case GlobalConstants.TeacherIdPrefix:
                         var teacherRecord = _teachersRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
                         _teachersRepository.Delete(teacherRecord);
                         await _teachersRepository.SaveChangesAsync();
+                        await DeleteApplicationUserByUniqueId(uniqueId);
 
                         break;
                     case GlobalConstants.StudentIdPrefix:
                         var studentRecord = _studentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
                         _studentsRepository.Delete(studentRecord);
                         await _studentsRepository.SaveChangesAsync();
+                        await DeleteApplicationUserByUniqueId(uniqueId);
 
                         break;
                     case GlobalConstants.ParentIdPrefix:
                         var parentRecord = _parentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
                         _parentsRepository.Delete(parentRecord);
                         await _parentsRepository.SaveChangesAsync();
+                        await DeleteApplicationUserByUniqueId(uniqueId);
 
                         break;
                 }
@@ -210,6 +222,15 @@
             }
 
             return null;
+        }
+
+        private async Task DeleteApplicationUserByUniqueId(string uniqueId)
+        {
+            var user = _usersRoRepository.All().FirstOrDefault(u => u.UniqueGradebookId == uniqueId);
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
         }
     }
 }
