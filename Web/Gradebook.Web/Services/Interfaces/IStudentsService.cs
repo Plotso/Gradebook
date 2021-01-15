@@ -6,5 +6,7 @@
     public interface IStudentsService
     {
         Task<T> CreateStudent<T>(StudentInputModel inputModel);
+
+        Task DeleteAsync(int id);
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Castle.Core.Internal;
     using Common;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,79 @@
                 _logger.LogError(e, "An exception occured during new school/principal record creation.");
                 return RedirectToAction("Error", "Home");
             }
+        }
+
+        public IActionResult EditSchool(int id)
+        {
+            var schoolInputModel = _schoolsServices.GetById<SchoolInputModel>(id);
+            var inputModel = new SchoolModifyInputModel
+            {
+                Id = id,
+                School = schoolInputModel
+            };
+
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSchool(SchoolModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _schoolsServices.EditAsync(inputModel);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during school record UPDATE operation for school with ID: {inputModel.Id}");
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction(nameof(SchoolsList));
+        }
+
+        public IActionResult DeleteSchool(int id)
+        {
+            var schoolInputModel = _schoolsServices.GetById<SchoolInputModel>(id);
+            var inputModel = new SchoolModifyInputModel
+            {
+                Id = id,
+                School = schoolInputModel
+            };
+
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSchool(SchoolModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction(nameof(SchoolsList));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _schoolsServices.DeleteAsync(inputModel.Id);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during school record DELETE operation for school with ID: {inputModel.Id}");
+                return RedirectToAction("Error", "Home");
+            }
+
+            return RedirectToAction(nameof(SchoolsList));
         }
 
         public IActionResult ConfirmCreated(ConfirmCreatedViewModel viewModel)

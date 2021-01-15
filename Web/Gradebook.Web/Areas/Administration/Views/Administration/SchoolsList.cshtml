@@ -15,6 +15,12 @@
           <p> <span class="user-specific-info">Principal:</span> @school.PrincipalFirstName @school.PrincipalFirstName</p>
           <p> <span class="user-specific-info">Address:</span> @school.Address</p>
           <p> <span class="user-specific-info">Total classes:</span> @school.Classes.Count()</p>
+          <a class="page-link-green" asp-action="EditSchool" asp-route-id="@school.Id" title="Edit school">
+              <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+          </a>
+          <a class="page-link-red" asp-action="DeleteSchool" asp-route-id="@school.Id" title="Delete school">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+          </a>
         </div>
       </li>
       <hr>

@@ -11,7 +11,6 @@
     public class SchoolInputModel : IMapFrom<School>, IMapTo<School>, IValidatableObject
     {
         [Required]
-        [Display(Name = "School Name")]
         public string Name { get; set; }
 
         [Required]

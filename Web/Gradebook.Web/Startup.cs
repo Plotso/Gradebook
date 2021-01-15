@@ -1,6 +1,7 @@
 ﻿namespace Gradebook.Web
 {
     using System.Reflection;
+    using Areas.Administration.ViewModels.InputModels;
     using Data;
     using Data.Common;
     using Data.Common.Repositories;
@@ -83,7 +84,7 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly);
+            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly, typeof(SchoolInputModel).GetTypeInfo().Assembly);
 
             // Seed data on application startup
             using (var serviceScope = app.ApplicationServices.CreateScope())

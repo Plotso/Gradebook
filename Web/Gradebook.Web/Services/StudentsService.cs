@@ -24,6 +24,16 @@
             _idGeneratorService = idGeneratorService;
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var student = _studentsRepository.All().FirstOrDefault(s => s.Id == id);
+            if (student != null)
+            {
+                _studentsRepository.Delete(student);
+                await _studentsRepository.SaveChangesAsync();
+            }
+        }
+
         public async Task<T> CreateStudent<T>(StudentInputModel inputModel)
         {
             var schoolId = int.Parse(inputModel.SchoolId);

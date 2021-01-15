@@ -134,6 +134,40 @@
             }
         }
 
+        public async Task DeleteByUniqueIdAsync(string uniqueId)
+        {
+            if (!string.IsNullOrEmpty(uniqueId))
+            {
+                switch (uniqueId[0])
+                {
+                    case GlobalConstants.PrincipalIdPrefix:
+                        var principalRecord = _principalsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        _principalsRepository.Delete(principalRecord);
+                        await _principalsRepository.SaveChangesAsync();
+
+                        break;
+                    case GlobalConstants.TeacherIdPrefix:
+                        var teacherRecord = _teachersRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        _teachersRepository.Delete(teacherRecord);
+                        await _teachersRepository.SaveChangesAsync();
+
+                        break;
+                    case GlobalConstants.StudentIdPrefix:
+                        var studentRecord = _studentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        _studentsRepository.Delete(studentRecord);
+                        await _studentsRepository.SaveChangesAsync();
+
+                        break;
+                    case GlobalConstants.ParentIdPrefix:
+                        var parentRecord = _parentsRepository.All().FirstOrDefault(p => p.UniqueId == uniqueId);
+                        _parentsRepository.Delete(parentRecord);
+                        await _parentsRepository.SaveChangesAsync();
+
+                        break;
+                }
+            }
+        }
+
         public IEnumerable<School> GetUserSchoolsByUniqueId(string uniqueId)
         {
             if (!string.IsNullOrEmpty(uniqueId))

@@ -51,5 +51,15 @@
 
             throw new ArgumentException($"Sorry, we couldn't find school with id {schoolId}");
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var teacher = _teachersRepository.All().FirstOrDefault(s => s.Id == id);
+            if (teacher != null)
+            {
+                _teachersRepository.Delete(teacher);
+                await _teachersRepository.SaveChangesAsync();
+            }
+        }
     }
 }

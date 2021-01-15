@@ -17,5 +17,7 @@
         Principal GetPrincipalByUniqueId(string uniqueId);
 
         Task SetUserEmail(string uniqueId, string email);
+
+        Task DeleteByUniqueIdAsync(string uniqueId);
     }
 }
