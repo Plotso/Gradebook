@@ -1,0 +1,46 @@
+﻿@using Gradebook.Data.Models.Grades
+@model Gradebook.Web.ViewModels.Subject.SubjectViewModel
+@{
+    ViewData["Title"] = "Subjects List";
+    var studentsCounter = 1;
+}
+
+<h1>Here you will see subject details</h1>
+
+<h3>Name: @Model.Name</h3>
+<h3>Grade: @Model.YearGrade</h3>
+<h3>School Year: @Model.SchoolYear</h3>
+<h3>Students Count: @Model.StudentSubjects.Count()</h3>
+<h3>Teacher: @Model.TeacherFullName</h3>
+<h3>School: @Model.TeacherSchoolName</h3>
+
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">Student number</th>
+        <th scope="col">Student Name</th>
+        <th scope="col">Term grades</th>
+        <th scope="col">Final grade(s)</th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var studentSubject in @Model.StudentSubjects) //ToDo: Add logic for filtration by term
+        {
+            <tr>
+                <th scope="row">@(studentsCounter++)</th>
+                <td>
+                    @studentSubject.StudentFullName
+                </td>
+                <td>
+                    @{
+                        var normalGrades = string.Join(" ", studentSubject.Grades.Where(g => g.Type == GradeType.Normal));
+                    }
+                    @normalGrades
+                </td>
+                <td>
+                    @string.Join(" ", studentSubject.Grades.Where(g => g.Type == GradeType.Final))
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,10 +1,10 @@
-﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.TeacherCreateInputModel
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.TeacherModifyInputModel
 @{
-    ViewData["Title"] = "Add teacher";
+    ViewData["Title"] = "Edit teacher";
 }
 
-<h3 class="page-heading">Add new teacher</h3>
-<form asp-action="CreateTeacher" method="post">
+<h3 class="page-heading">Edit teacher</h3>
+<form asp-action="EditTeacher" method="post">
     <div>
         <label asp-for="Teacher.FirstName">Teacher's first name</label>
         <input asp-for="Teacher.FirstName" class="form-control"/>
@@ -29,7 +29,7 @@
 
     <hr/>
     <div class="center-group">
-        <input type="submit" class="btn btn-primary create-record-btn" value="Create Teacher"/>
+        <input type="submit" class="btn btn-primary create-record-btn" value="Edit Teacher"/>
     </div>
 </form>
 

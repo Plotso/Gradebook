@@ -44,6 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Teacher" />
+    <Folder Include="Areas\Teacher\Controllers" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,6 @@
     {
         public int Id { get; set; }
 
-        [Required]
         public char Letter { get; set; }
 
         public int Year { get; set; } // 1st year, 2nd year, 3rd year student and etc.

@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Areas.Principal.ViewModels.InputModels;
     using Data.Common.Models;
     using Data.Common.Repositories;
     using Data.Models;
@@ -22,6 +23,46 @@
             _studentsRepository = studentsRepository;
             _schoolsRepository = schoolsRepository;
             _idGeneratorService = idGeneratorService;
+        }
+
+        public int? GetIdByUniqueId(string uniqueId)
+        {
+            var student = _studentsRepository.All().FirstOrDefault(s => s.UniqueId == uniqueId);
+            return student?.Id;
+        }
+
+        public T GetById<T>(int id)
+        {
+            var student = _studentsRepository.All().Where(s => s.Id == id);
+            return student.To<T>().FirstOrDefault();
+        }
+
+        public async Task EditAsync(StudentModifyInputModel modifiedModel)
+        {
+            var student = _studentsRepository.All().FirstOrDefault(s => s.Id == modifiedModel.Id);
+            if (student != null)
+            {
+                var inputModel = modifiedModel.Student;
+                student.FirstName = inputModel.FirstName;
+                student.LastName = inputModel.LastName;
+                student.BirthDate = inputModel.BirthDate;
+                student.PersonalIdentificationNumber = inputModel.PersonalIdentificationNumber;
+
+                var schoolId = int.Parse(inputModel.SchoolId);
+                var school = _schoolsRepository.All().FirstOrDefault(s => s.Id == schoolId);
+                if (school != null)
+                {
+                    student.School = school;
+                    var classId = int.Parse(inputModel.ClassId);
+                    if (school.Classes.Any(c => c.Id == classId))
+                    {
+                        student.Class = school.Classes.FirstOrDefault(c => c.Id == classId);
+                    }
+                }
+
+                _studentsRepository.Update(student);
+                await _studentsRepository.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)

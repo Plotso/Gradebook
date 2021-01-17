@@ -1,0 +1,23 @@
+﻿@model Gradebook.Web.ViewModels.Subject.SubjectsListViewModel
+@{
+    ViewData["Title"] = "Subjects List";
+}
+
+<h1>Here you will see list of subjects for currently logged user</h1>
+
+@foreach (var subject in @Model.Subjects)
+{
+    <h3>Name: @subject.Name</h3>
+    <h3>Grade: @subject.YearGrade</h3>
+    <h3>School Year: @subject.SchoolYear</h3>
+    <h3>Students Count: @subject.StudentSubjects.Count()</h3>
+    <h3>Teacher: @subject.TeacherFullName</h3>
+    <h3>School: @subject.TeacherSchoolName</h3>
+    
+    <button type="button" class="btn btn-outline-success">
+        <a class="page-link-with-hover" asp-action="ById" asp-route-id="@subject.Id" title="Add student">
+            Details
+        </a>
+    </button>
+    <hr/>
+}

@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Areas.Principal.ViewModels.InputModels;
     using Data.Common.Models;
     using Data.Common.Repositories;
     using Data.Models;
@@ -27,7 +28,19 @@
             _idGeneratorService = idGeneratorService;
         }
 
-        public async Task<T> CreateStudent<T>(TeacherInputModel inputModel)
+        public int? GetIdByUniqueId(string uniqueId)
+        {
+            var teacher = _teachersRepository.All().FirstOrDefault(t => t.UniqueId == uniqueId);
+            return teacher?.Id;
+        }
+
+        public T GetById<T>(int id)
+        {
+            var teacher = _teachersRepository.All().Where(t => t.Id == id);
+            return teacher.To<T>().FirstOrDefault();
+        }
+
+        public async Task<T> CreateTeacher<T>(TeacherInputModel inputModel)
         {
             var schoolId = int.Parse(inputModel.SchoolId);
             var school = _schoolsRepository.All().FirstOrDefault(s => s.Id == schoolId);
@@ -50,6 +63,28 @@
             }
 
             throw new ArgumentException($"Sorry, we couldn't find school with id {schoolId}");
+        }
+
+        public async Task EditAsync(TeacherModifyInputModel modifiedModel)
+        {
+            var teacher = _teachersRepository.All().FirstOrDefault(s => s.Id == modifiedModel.Id);
+            if (teacher != null)
+            {
+                var inputModel = modifiedModel.Teacher;
+
+                teacher.FirstName = inputModel.FirstName;
+                teacher.LastName = inputModel.LastName;
+
+                var schoolId = int.Parse(inputModel.SchoolId);
+                var school = _schoolsRepository.All().FirstOrDefault(s => s.Id == schoolId);
+                if (school != null)
+                {
+                    teacher.School = school;
+                }
+
+                _teachersRepository.Update(teacher);
+                await _teachersRepository.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)
