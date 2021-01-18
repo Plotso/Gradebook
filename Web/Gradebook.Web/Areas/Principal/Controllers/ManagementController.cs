@@ -18,6 +18,7 @@
     using Web.ViewModels.Administration;
     using Web.ViewModels.Home;
     using Web.ViewModels.InputModels;
+    using Web.ViewModels.Principal;
 
     [Authorize(Roles = GlobalConstants.PrincipalRoleName + "," + GlobalConstants.AdministratorRoleName)]
     [Area("Principal")]
@@ -28,25 +29,63 @@
         private readonly ISchoolsServices _schoolsServices;
         private readonly IStudentsService _studentsService;
         private readonly ITeachersService _teachersService;
+        private readonly ISubjectsService _subjectsService;
 
         public ManagementController(
             ILogger<ManagementController> logger,
             UserManager<ApplicationUser> userManager,
             ISchoolsServices schoolsServices,
             IStudentsService studentsService,
-            ITeachersService teachersService)
+            ITeachersService teachersService,
+            ISubjectsService subjectsService)
         {
             _logger = logger;
             _userManager = userManager;
             _schoolsServices = schoolsServices;
             _studentsService = studentsService;
             _teachersService = teachersService;
+            _subjectsService = subjectsService;
         }
-        // ToDo: Add logic for creation of new Teacher/Student/Subject/Parent
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> CreateSubject()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schoolIds = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).Select(s => s.Id);
+            var teachersInSchools = _teachersService.GetAllBySchoolIds<TeacherViewModel>(schoolIds);
+            var inputModel = new SubjectCreateInputModel
+            {
+                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName}", t.Id.ToString())).ToList()
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSubject(SubjectCreateInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.Subject.TeacherId.IsNullOrEmpty())
+            {
+                //ToDo: in case of null teacher, return appropriate message or add model validation?
+                return View(inputModel);
+            }
+
+            try
+            {
+               await _subjectsService.CreateSubject(inputModel.Subject);
+
+               return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during new subject record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         public async Task<IActionResult> CreateStudent()

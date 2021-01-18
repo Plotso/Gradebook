@@ -25,6 +25,6 @@
 
         public int StudentId { get; set; }
 
-        public virtual ICollection<StudentParent> StudentParents { get; set; }
+        public virtual ICollection<StudentParent> StudentParents { get; set; } = new HashSet<StudentParent>();
     }
 }

@@ -93,7 +93,7 @@
                     return null;  // RedirectToAction("Error", "Home"); // Maybe add reasonable message?
                 }
 
-                return _subjectsService.GetAllByStudentId<SubjectViewModel>(schoolIds.FirstOrDefault());
+                return _subjectsService.GetAllBySchoolId<SubjectViewModel>(schoolIds.FirstOrDefault());
             }
 
             return _subjectsService.GetAll<SubjectViewModel>();

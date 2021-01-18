@@ -1,6 +1,7 @@
 ﻿namespace Gradebook.Web.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Areas.Principal.ViewModels.InputModels;
@@ -38,6 +39,12 @@
         {
             var teacher = _teachersRepository.All().Where(t => t.Id == id);
             return teacher.To<T>().FirstOrDefault();
+        }
+
+        public IEnumerable<T> GetAllBySchoolIds<T>(IEnumerable<int> schoolIds)
+        {
+            var teachers = _teachersRepository.All().Where(t => schoolIds.Contains(t.SchoolId));
+            return teachers.To<T>().ToList();
         }
 
         public async Task<T> CreateTeacher<T>(TeacherInputModel inputModel)

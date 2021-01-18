@@ -1,0 +1,56 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.SubjectCreateInputModel
+@{
+    ViewData["Title"] = "Add Subject";
+}
+
+<h3 class="page-heading">Add new subject</h3>
+<form asp-action="CreateSubject" method="post">
+    <div>
+        <label asp-for="Subject.Name">Subject's name</label>
+        <input asp-for="Subject.Name" class="form-control"/>
+        <span asp-validation-for="Subject.Name" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Subject.YearGrade">Grade that is to have this subject: </label>
+        <input asp-for="Subject.YearGrade" class="form-control"  aria-describedby="yearGradeHelpBlock"/>
+        <span asp-validation-for="Subject.YearGrade" class="text-danger"></span>
+        <small id="yearGradeHelpBlock" class="form-text text-muted">
+            Ex: If you type the number 3, the subject will be available for students at 3rd grade
+        </small>
+    </div>
+    
+    <div>
+        <label asp-for="Subject.SchoolYear">School year: </label>
+        <input asp-for="Subject.SchoolYear" class="form-control" aria-describedby="schoolYearHelpBlock"/>
+        <span asp-validation-for="Subject.SchoolYear" class="text-danger"></span>
+        <small id="schoolYearHelpBlock" class="form-text text-muted">
+            Ex: 2020-2021
+        </small>
+    </div>
+    
+    <div>
+        <label asp-for="Subject.TeacherId"></label>
+        <select asp-for="Subject.TeacherId" 
+                class="form-control" 
+                asp-items="Model.Teachers">
+            <option>Select teacher from list: </option>
+        </select>
+        <span asp-validation-for="Subject.TeacherId" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Create Teacher"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+            $(document).ready(function () {
+              bsCustomFileInput.init()
+            })            
+    </script>
+}
