@@ -19,6 +19,7 @@
     using Web.ViewModels.Home;
     using Web.ViewModels.InputModels;
     using Web.ViewModels.Principal;
+    using Web.ViewModels.Subject;
 
     [Authorize(Roles = GlobalConstants.PrincipalRoleName + "," + GlobalConstants.AdministratorRoleName)]
     [Area("Principal")]
@@ -84,6 +85,83 @@
             catch (Exception e)
             {
                 _logger.LogError(e, $"An exception occured during new subject record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public async Task<IActionResult> EditSubject(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schoolIds = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).Select(s => s.Id);
+            var teachersInSchools = _teachersService.GetAllBySchoolIds<TeacherViewModel>(schoolIds);
+            var subject = _subjectsService.GetById<SubjectInputModel>(id);
+            var inputModel = new SubjectModifyInputModel()
+            {
+                Id = id,
+                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName}", t.Id.ToString())).ToList(),
+                Subject = subject
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSubject(SubjectModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.Subject.TeacherId.IsNullOrEmpty())
+            {
+                //ToDo: in case of null teacher, return appropriate message or add model validation?
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _subjectsService.EditAsync(inputModel);
+
+                return RedirectToAction("ById", "Subjects", new { area = string.Empty, id = inputModel.Id });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student UPDATE operation for subject with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public IActionResult DeleteSubject(int id)
+        {
+            var subject = _subjectsService.GetById<SubjectInputModel>(id);
+            var inputModel = new SubjectModifyInputModel()
+            {
+                Id = id,
+                Subject = subject
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSubject(SubjectModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _subjectsService.DeleteAsync(inputModel.Id);
+
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });  // string is empty in order to exit current principal area
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student DELETE operation for subject with id {inputModel.Id}. Ex: {e.Message}");
                 return RedirectToAction("Error", "Home");
             }
         }

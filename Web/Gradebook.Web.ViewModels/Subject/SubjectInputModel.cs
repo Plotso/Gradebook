@@ -10,6 +10,7 @@
         public string Name { get; set; }
 
         [Required]
+        [Range(1, 12)]
         public int YearGrade { get; set; }  // for instance 3rd grade/year students
 
         [Required]

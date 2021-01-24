@@ -1,10 +1,10 @@
-﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.SubjectCreateInputModel
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.SubjectModifyInputModel
 @{
-    ViewData["Title"] = "Add Subject";
+    ViewData["Title"] = "Edit Subject";
 }
 
-<h3 class="page-heading">Add new subject</h3>
-<form asp-action="CreateSubject" method="post">
+<h3 class="page-heading">Edit subject</h3>
+<form asp-action="EditSubject" method="post">
     <div>
         <label asp-for="Subject.Name">Subject's name</label>
         <input asp-for="Subject.Name" class="form-control"/>
@@ -41,7 +41,7 @@
 
     <hr/>
     <div class="center-group">
-        <input type="submit" class="btn btn-primary create-record-btn" value="Create Subject"/>
+        <input type="submit" class="btn btn-primary create-record-btn" value="Edit Subject"/>
     </div>
 </form>
 

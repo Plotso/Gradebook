@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Areas.Principal.ViewModels.InputModels;
     using ViewModels.Subject;
 
     public interface ISubjectsService
@@ -17,6 +18,8 @@
         T GetById<T>(int id);
 
         Task CreateSubject(SubjectInputModel inputModel);
+
+        Task EditAsync(SubjectModifyInputModel modifiedModel);
 
         Task DeleteAsync(int id);
     }

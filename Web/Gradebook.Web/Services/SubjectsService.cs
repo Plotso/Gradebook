@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Areas.Principal.ViewModels.InputModels;
     using Data.Common.Repositories;
     using Data.Models;
     using Gradebook.Services.Mapping;
@@ -75,6 +76,31 @@
             }
 
             throw new ArgumentException($"Sorry, we couldn't find teacher with id {teacherId}");
+        }
+
+        public async Task EditAsync(SubjectModifyInputModel modifiedModel)
+        {
+            var subject = _subjectsRepository.All().FirstOrDefault(s => s.Id == modifiedModel.Id);
+            if (subject != null)
+            {
+                var inputModel = modifiedModel.Subject;
+                subject.Name = inputModel.Name;
+                subject.YearGrade = inputModel.YearGrade;
+                subject.SchoolYear = inputModel.SchoolYear;
+
+                var teacherId = int.Parse(inputModel.TeacherId);
+                if (subject.TeacherId != teacherId)
+                {
+                    var teacher = _teachersRepository.All().FirstOrDefault(t => t.Id == teacherId);
+                    if (teacher != null)
+                    {
+                        subject.Teacher = teacher;
+                    }
+                }
+
+                _subjectsRepository.Update(subject);
+                await _subjectsRepository.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)
