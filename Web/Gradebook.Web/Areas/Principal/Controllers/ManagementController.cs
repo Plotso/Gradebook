@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Xml.Schema;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
     using Common;
@@ -15,6 +16,7 @@
     using Microsoft.Extensions.Logging;
     using Services.Interfaces;
     using ViewModels.InputModels;
+    using Web.ViewModels;
     using Web.ViewModels.Administration;
     using Web.ViewModels.Home;
     using Web.ViewModels.InputModels;
@@ -31,6 +33,7 @@
         private readonly IStudentsService _studentsService;
         private readonly ITeachersService _teachersService;
         private readonly ISubjectsService _subjectsService;
+        private readonly IParentsService _parentsService;
 
         public ManagementController(
             ILogger<ManagementController> logger,
@@ -38,7 +41,8 @@
             ISchoolsServices schoolsServices,
             IStudentsService studentsService,
             ITeachersService teachersService,
-            ISubjectsService subjectsService)
+            ISubjectsService subjectsService,
+            IParentsService parentsService)
         {
             _logger = logger;
             _userManager = userManager;
@@ -46,6 +50,7 @@
             _studentsService = studentsService;
             _teachersService = teachersService;
             _subjectsService = subjectsService;
+            _parentsService = parentsService;
         }
 
         public IActionResult Index()
@@ -162,6 +167,42 @@
             catch (Exception e)
             {
                 _logger.LogError(e, $"An exception occured during student DELETE operation for subject with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public async Task<IActionResult> CreateParent()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schools = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).ToList();
+            var students = _studentsService.GetAllBySchoolIds<StudentViewModel>(schools.Select(s => s.Id));
+            var inputModel = new ParentCreateInputModel
+            {
+                Students = students.Select(s => new SelectListItem($"{s.FirstName} {s.LastName} ({s.SchoolName})", s.Id.ToString())).ToList()
+            };
+            return View(inputModel);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateParent(ParentCreateInputModel inputModel)
+        {
+            if (!ModelState.IsValid || !inputModel.Parent.StudentIds.Any())
+            {
+                //ToDo: in case of null school/class, return appropriate message or add model validation?
+                return View(inputModel);
+            }
+
+            try
+            {
+                var confirmViewModel = await _parentsService.CreateParentAsync<ConfirmCreatedViewModel>(inputModel.Parent);
+
+                return RedirectToAction(nameof(ConfirmCreated), confirmViewModel);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during new parent record creation. Ex: {e.Message}");
                 return RedirectToAction("Error", "Home");
             }
         }

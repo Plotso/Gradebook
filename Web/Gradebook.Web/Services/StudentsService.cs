@@ -1,6 +1,7 @@
 ﻿namespace Gradebook.Web.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Areas.Principal.ViewModels.InputModels;
@@ -23,6 +24,12 @@
             _studentsRepository = studentsRepository;
             _schoolsRepository = schoolsRepository;
             _idGeneratorService = idGeneratorService;
+        }
+
+        public IEnumerable<T> GetAllBySchoolIds<T>(IEnumerable<int> schoolIds)
+        {
+            var students = _studentsRepository.All().Where(s => schoolIds.Contains(s.SchoolId));
+            return students.To<T>();
         }
 
         public int? GetIdByUniqueId(string uniqueId)

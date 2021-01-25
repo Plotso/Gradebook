@@ -1,0 +1,44 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.ParentCreateInputModel
+@{
+    ViewData["Title"] = "Add parent";
+}
+
+<h3 class="page-heading">Add new parent</h3>
+<form asp-action="CreateParent" method="post">
+    <div>
+        <label asp-for="Parent.FirstName">Parent's first name</label>
+        <input asp-for="Parent.FirstName" class="form-control"/>
+        <span asp-validation-for="Parent.FirstName" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Parent.LastName">Parent's last name</label>
+        <input asp-for="Parent.LastName" class="form-control"/>
+        <span asp-validation-for="Parent.LastName" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Parent.PhoneNumber"></label>
+        <input asp-for="Parent.PhoneNumber" class="form-control"/>
+        <span asp-validation-for="Parent.PhoneNumber" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Parent.StudentIds"></label>
+        <select asp-for="Parent.StudentIds" 
+                class="form-control" 
+                asp-items="Model.Students" multiple>
+            <option>Select students from list: </option>
+        </select>
+        <span asp-validation-for="Parent.StudentIds" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Create Parent"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

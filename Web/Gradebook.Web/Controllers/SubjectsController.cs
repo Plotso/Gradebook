@@ -8,6 +8,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore.Internal;
     using Microsoft.Extensions.Logging;
     using Services.Interfaces;
     using ViewModels.Home;
@@ -20,6 +21,7 @@
         private readonly ISubjectsService _subjectsService;
         private readonly ITeachersService _teachersService;
         private readonly IStudentsService _studentsService;
+        private readonly IParentsService _parentsService;
         private readonly ISchoolsServices _schoolsServices;
 
         public SubjectsController(
@@ -28,6 +30,7 @@
             ISubjectsService subjectsService,
             ITeachersService teachersService,
             IStudentsService studentsService,
+            IParentsService parentsService,
             ISchoolsServices schoolsServices)
         {
             _logger = logger;
@@ -35,6 +38,7 @@
             _subjectsService = subjectsService;
             _teachersService = teachersService;
             _studentsService = studentsService;
+            _parentsService = parentsService;
             _schoolsServices = schoolsServices;
         }
 
@@ -82,6 +86,18 @@
                 }
 
                 return _subjectsService.GetAllByStudentId<SubjectViewModel>(studentId.Value);
+            }
+
+            if (User.IsInRole(GlobalConstants.ParentRoleName))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var studentIds = _parentsService.GetStudentIdsByParentUniqueId(user.UniqueGradebookId);
+                if (!studentIds.Any())
+                {
+                    return null;  // RedirectToAction("Error", "Home"); // Maybe add reasonable message?
+                }
+
+                return _subjectsService.GetAllByMultipleStudentIds<SubjectViewModel>(studentIds);
             }
 
             if (User.IsInRole(GlobalConstants.PrincipalRoleName))

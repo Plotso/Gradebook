@@ -36,6 +36,13 @@
             var subjects = studentSubjects.Select(s => s.Subject);
             return subjects.To<T>().ToList();
         }
+        
+        public IEnumerable<T> GetAllByMultipleStudentIds<T>(List<int> studentIds)
+        {
+            var studentSubjects = _studentSubjectRepository.All().Where(s => studentIds.Contains(s.StudentId));
+            var subjects = studentSubjects.Select(s => s.Subject);
+            return subjects.To<T>().ToList();
+        }
 
         public IEnumerable<T> GetAllBySchoolId<T>(int schoolId)
         {
