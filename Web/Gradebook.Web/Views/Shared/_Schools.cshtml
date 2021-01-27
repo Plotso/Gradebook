@@ -1,0 +1,35 @@
+﻿<style>
+</style>
+<script type="text/javascript">
+    Vue.component('schools', {
+        props: {
+            schoolsInput: Array
+        },
+        data() {
+            return {
+                currentSchoolIndex: 0,
+                schoolsLength: this.schoolsInput.length
+            }
+        },
+        methods: {
+            getImageUrl: function () {
+                return "images/schools/" + schoolsInput[currentSchoolIndex].SchoolImageName
+            }
+        },
+        template: '#schools-template'
+    });
+</script>
+<script type="text/template" id="schools-template">
+    <div>
+          <button type="button" class="btn btn-outline-secondary" v-if="currentSchoolIndex > 0" onclick="currentSchoolIndex += 1">
+              Previous
+          </button>
+          <button type="button" class="btn btn-outline-secondary" v-if="currentSchoolIndex < (schoolsLength - 1)" onclick="currentSchoolIndex -=1 ">
+              Next
+          </button>
+
+        <h1>{{schoolsInput[currentSchoolIndex].Name}} </h1>
+        <img :src="getImageUrl()">
+        <h3>{{schoolsInput[currentSchoolIndex].Address}}</h3>
+    </div>
+</script>

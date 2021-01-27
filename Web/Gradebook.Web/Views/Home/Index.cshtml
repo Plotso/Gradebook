@@ -1,9 +1,67 @@
 ﻿@using Gradebook.Common
+@using Gradebook.Data.Models
+@using Microsoft.AspNetCore.Identity
+@using Castle.Core.Internal
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model Gradebook.Web.ViewModels.Home.IndexViewModel
+
 @{
     ViewData["Title"] = "Home Page";
+    
+    bool IsCurrentUserAdmin()
+    {
+        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+        var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+        return roles.Any(r => r == GlobalConstants.AdministratorRoleName);
+    }
+    
+    bool IsCurrentUserPrincipalOrAdmin()
+    {
+        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+        var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+        return roles.Any(r => r == GlobalConstants.AdministratorRoleName || r == GlobalConstants.PrincipalRoleName);
+    }
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to @GlobalConstants.SystemName!</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        if (IsCurrentUserAdmin())
+        {
+            <button type="button" class="btn btn-outline-success">
+                <a class="page-link-green" asp-area="Administration" asp-controller="Dashboard" asp-action="Index" title="Edit Comment">
+                    Dashboard 
+                </a>
+            </button>
+        }
+
+        @foreach (var school in Model.Schools)
+        {
+            
+            <h1>@school.Name</h1>
+            <img src="images/schools/@school.SchoolImageName" width="50%">
+            <h3>@school.Address</h3>
+            <hr>
+        }
+        
+        <button type="button" class="btn btn-light">
+            <a class="page-link-with-hover" asp-controller="Subjects" asp-action="SubjectsList" title="Edit Comment">
+                Go to subjects list 
+            </a>
+        </button>
+        
+        <button type="button" class="btn btn-outline-secondary">
+            Go to student page
+        </button>
+        
+        <button type="button" class="btn btn-outline-secondary">
+            Go to teacher page
+        </button>
+    }
+    else 
+    {
+        <h1 class="display-4">Welcome to @GlobalConstants.SystemName!</h1>
+        <p>Platform suited for a gradebook for students of all types - primary school, high school, university. Different sections for students, parents, teachers and principals are ensuring smooth and user-friendly experience.</p>
+    }
 </div>

@@ -1,0 +1,59 @@
+﻿@using Gradebook.Data.Models
+@model Gradebook.Web.Areas.Administration.ViewModels.InputModels.SchoolModifyInputModel
+@{
+    ViewData["Title"] = "Edit School";
+}
+
+<h3 class="page-heading">Edit School</h3>
+<form asp-action="EditSchool" method="post">
+    <div>
+        <label asp-for="School.Name"></label>
+        <input asp-for="School.Name" class="form-control"/>
+        <span asp-validation-for="School.Name" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="School.Address"></label>
+        <input asp-for="School.Address" class="form-control"/>
+        <span asp-validation-for="School.Address" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="School.Type"></label>
+        <select asp-for="School.Type"
+                class="form-control"
+                asp-items="Html.GetEnumSelectList<SchoolType>()">
+            <option>Select school type...</option>
+        </select>
+        <span asp-validation-for="School.Type" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="School.SchoolImage">Upload picture of the school:</label>
+    </div>
+
+    <div class="custom-file">
+        <label asp-for="School.SchoolImage">Change school picture:</label>
+        <input type="file" class="custom-file-input" asp-for="School.SchoolImage" aria-describedby="fileHelpBlock">
+        <label class="custom-file-label" asp-for="School.SchoolImage">Choose new picture</label>
+        <small id="fileHelpBlock" class="form-text text-muted">
+            Valid formats are jpeg, jpg, png & gif.
+        </small>
+        <span asp-validation-for="School.SchoolImage" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Edit School"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+            $(document).ready(function () {
+              bsCustomFileInput.init()
+            })            
+    </script>
+}

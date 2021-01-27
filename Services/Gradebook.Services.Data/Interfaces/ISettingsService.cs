@@ -1,4 +1,4 @@
-﻿namespace Gradebook.Services.Data
+﻿namespace Gradebook.Services.Data.Interfaces
 {
     using System.Collections.Generic;
 

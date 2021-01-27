@@ -7,7 +7,9 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Models;
+    using Models.Grades;
     using Services.Data;
+    using Services.Data.Interfaces;
 
     public class GradebookSeeder : ISeeder
     {
@@ -23,6 +25,7 @@
             await SeedClasses(dbContext);
             await SeedStudents(dbContext);
             await SeedSubjects(dbContext);
+            await SeedGrades(dbContext);
         }
 
         private async Task SeedPrincipals(ApplicationDbContext dbContext)
@@ -57,10 +60,10 @@
 
             var schools = new List<School>
             {
-                new School {Name = "Second English Language High School \"Thomas Jefferson\"", Address = "ul. 'Trayanova vrata' 26, 1408 g.k. Strelbishte, Sofia", Type = SchoolType.HighSchool},
-                new School {Name = "National Trade and Banking High School", Address = "bul. 'Vitosha' 91, 1408 Ivan Vazov, Sofia", Type = SchoolType.HighSchool},
-                new School {Name = "142 OU \"Veselin Hanchev\"", Address = "ul. 'Pchela' 21, 1618 g.k. Krasno selo, Sofia", Type = SchoolType.PrimarySchool},
-                new School {Name = "New Bulgarian University (NBU)", Address = "ul. 'Montevideo' 21, 1618 g.k. Ovcha kupel 2, Sofia", Type = SchoolType.University}
+                new School { Name = "Second English Language High School \"Thomas Jefferson\"", Address = "ul. 'Trayanova vrata' 26, 1408 g.k. Strelbishte, Sofia", Type = SchoolType.HighSchool, SchoolImageName = "2aeg.jpg" },
+                new School { Name = "National Trade and Banking High School", Address = "bul. 'Vitosha' 91, 1408 Ivan Vazov, Sofia", Type = SchoolType.HighSchool, SchoolImageName = "ntbg.jpg" },
+                new School { Name = "142 OU \"Veselin Hanchev\"", Address = "ul. 'Pchela' 21, 1618 g.k. Krasno selo, Sofia", Type = SchoolType.PrimarySchool, SchoolImageName = "142ou.jpg" },
+                new School { Name = "New Bulgarian University (NBU)", Address = "ul. 'Montevideo' 21, 1618 g.k. Ovcha kupel 2, Sofia", Type = SchoolType.University, SchoolImageName = "nbu.png" }
             };
 
             var counter = 0;
@@ -71,6 +74,7 @@
                 {
                     school.Principal = principal;
                 }
+
                 await dbContext.AddAsync(school);
             }
 
@@ -156,6 +160,31 @@
             }
 
             await dbContext.SaveChangesAsync();
+        }
+
+        private async Task SeedGrades(ApplicationDbContext dbContext)
+        {
+            if (dbContext.Grades.Any())
+            {
+                return;
+            }
+
+            var firstDbSubject = await dbContext.Subjects.FirstOrDefaultAsync(s => s.StudentSubjects.Any());
+
+            if (firstDbSubject != null)
+            {
+                var grade = new Grade
+                {
+                    Teacher = firstDbSubject.Teacher,
+                    Period = GradePeriod.FirstTerm,
+                    Type = GradeType.Normal,
+                    StudentSubject = firstDbSubject.StudentSubjects.FirstOrDefault(),
+                    Value = 5.75m
+                };
+
+                await dbContext.Grades.AddAsync(grade);
+                await dbContext.SaveChangesAsync();
+            }
         }
 
         private async Task SeedSubjects(ApplicationDbContext dbContext)

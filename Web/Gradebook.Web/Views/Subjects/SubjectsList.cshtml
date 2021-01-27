@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Gradebook.Data.Models
+@using Gradebook.Common
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model Gradebook.Web.ViewModels.Subject.SubjectsListViewModel
+@{
+    ViewData["Title"] = "Subjects List";
+    
+    bool IsCurrentUserPrincipalOrAdmin()
+    {
+        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+        var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+        return roles.Any(r => r == GlobalConstants.AdministratorRoleName || r == GlobalConstants.PrincipalRoleName);
+    }
+}
+
+<h1>Here you will see list of subjects for currently logged user</h1>
+
+@foreach (var subject in @Model.Subjects)
+{
+    <h3>Name: @subject.Name</h3>
+    <h3>Grade: @subject.YearGrade</h3>
+    <h3>School Year: @subject.SchoolYear</h3>
+    <h3>Students Count: @subject.StudentSubjects.Count()</h3>
+    <h3>Teacher: @subject.TeacherFullName</h3>
+    <h3>School: @subject.TeacherSchoolName</h3>
+    
+    <button type="button" class="btn btn-outline-success">
+        <a class="page-link-with-hover" asp-action="ById" asp-route-id="@subject.Id" title="Add student">
+            Details
+        </a>
+    </button>
+    if (IsCurrentUserPrincipalOrAdmin())
+    {
+        <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditSubject" asp-route-id="@subject.Id" title="Edit subject">
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+        <a class="page-link-red" asp-area="Principal" asp-controller="Management" asp-action="DeleteSubject" asp-route-id="@subject.Id" title="Delete subject">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+    }
+    <hr/>
+}

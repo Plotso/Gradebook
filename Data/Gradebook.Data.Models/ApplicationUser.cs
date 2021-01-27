@@ -16,6 +16,8 @@ namespace Gradebook.Data.Models
             Logins = new HashSet<IdentityUserLogin<string>>();
         }
 
+        public string UniqueGradebookId { get; set; }
+
         // Audit info
         public DateTime CreatedOn { get; set; }
 

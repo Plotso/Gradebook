@@ -12,6 +12,7 @@
     using Gradebook.Data.Repositories;
     using Gradebook.Data.Seeding;
     using Gradebook.Services.Data;
+    using Gradebook.Services.Data.Interfaces;
     using Gradebook.Services.Messaging;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;

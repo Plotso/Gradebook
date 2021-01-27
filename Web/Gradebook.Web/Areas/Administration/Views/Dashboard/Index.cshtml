@@ -5,3 +5,33 @@
 
 <h1>@ViewData["Title"]</h1>
 Settings: @Model.SettingsCount
+
+<h2>Admin pages: </h2>
+<button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-controller="Administration" asp-action="SchoolsList" title="Add student">
+        View and manage schools
+    </a>
+</button>
+
+
+<h2>New user creation: </h2>
+<button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="CreateStudent" title="Add student">
+        Add new student 
+    </a>
+</button>
+<button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="CreateTeacher" title="Add teacher">
+        Add new teacher 
+    </a>
+</button>
+<button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="CreateSubject" title="Add subject">
+        Add new subject 
+    </a>
+</button>
+<button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-controller="Administration" asp-action="CreateSchool" title="Add school">
+        Add new school & principal 
+    </a>
+</button>

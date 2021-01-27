@@ -2,15 +2,14 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using Common.Models;
 
-    public class Subject
+    public class Subject : BaseDeletableModel<int>
     {
         public Subject()
         {
             StudentSubjects = new HashSet<StudentSubject>();
         }
-
-        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }

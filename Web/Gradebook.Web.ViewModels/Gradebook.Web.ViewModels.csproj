@@ -23,4 +23,8 @@
     <ProjectReference Include="..\..\Services\Gradebook.Services.Mapping\Gradebook.Services.Mapping.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="InputModels\Administation" />
+  </ItemGroup>
+
 </Project>

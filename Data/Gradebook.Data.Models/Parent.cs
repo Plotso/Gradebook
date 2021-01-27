@@ -7,6 +7,11 @@
 
     public class Parent : BasePersonModel
     {
+        public Parent()
+        {
+            UserType = UserType.Parent;
+        }
+
         [Required]
         public string FirstName { get; set; }
 
@@ -16,11 +21,8 @@
         [Required]
         public string PhoneNumber { get; set; }
 
-        [Required]
         public string Email { get; set; }
 
-        public int StudentId { get; set; }
-
-        public virtual ICollection<StudentParent> StudentParents { get; set; }
+        public virtual ICollection<StudentParent> StudentParents { get; set; } = new HashSet<StudentParent>();
     }
 }

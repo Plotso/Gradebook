@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <h1>Hello, @User.Identity.Name!</h1>
+    <h2>This is a management page for people in principle role. You can do some adjustments here. For example: </h2>
+
+    <button type="button" class="btn btn-outline-success">
+        <a class="page-link-with-hover" asp-action="CreateStudent" title="Add student">
+            Add new student 
+        </a>
+    </button>
+    <button type="button" class="btn btn-outline-success">
+        <a class="page-link-with-hover" asp-action="CreateParent" title="Add parent">
+            Add new parent 
+        </a>
+    </button>
+    <button type="button" class="btn btn-outline-success">
+        <a class="page-link-with-hover" asp-action="CreateTeacher" title="Add teacher">
+            Add new teacher 
+        </a>
+    </button>
+    <button type="button" class="btn btn-outline-success">
+        <a class="page-link-with-hover" asp-action="CreateSubject" title="Add subject">
+            Add new subject 
+        </a>
+    </button>
+    <hr>
+    <button type="button" class="btn btn-light">
+        <a class="page-link-with-hover" asp-area="" asp-controller="Subjects" asp-action="SubjectsList" title="Edit Comment">
+            Go to subjects list 
+        </a>
+    </button>
+</div>

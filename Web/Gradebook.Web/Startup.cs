@@ -1,12 +1,17 @@
 ﻿namespace Gradebook.Web
 {
     using System.Reflection;
+    using Areas.Administration.ViewModels.InputModels;
     using Data;
     using Data.Common;
     using Data.Common.Repositories;
     using Data.Models;
     using Data.Repositories;
     using Data.Seeding;
+    using Gradebook.Services.Data;
+    using Gradebook.Services.Data.Interfaces;
+    using Gradebook.Services.Mapping;
+    using Gradebook.Services.Messaging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -15,9 +20,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Services.Data;
-    using Services.Mapping;
-    using Services.Messaging;
+    using Services;
+    using Services.Interfaces;
     using ViewModels;
 
     public class Startup
@@ -38,8 +42,10 @@
                     .UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
                 );
 
-            services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+            services
+                .AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.Configure<CookiePolicyOptions>(
                 options =>
@@ -53,7 +59,9 @@
                     {
                         options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
                     }).AddRazorRuntimeCompilation();
-            services.AddRazorPages();
+            services
+                .AddRazorPages()
+                .AddRazorRuntimeCompilation();
 
             services.AddSingleton(configuration);
 
@@ -63,15 +71,22 @@
             services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
             // Application services
+            services.AddSingleton<IIdGeneratorService, IdGeneratorService>(); // MUST be singleton in order to generate uniqueIds
             services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddTransient<ISettingsService, SettingsService>();
-            services.AddTransient<IIdGeneratorService, IdGeneratorService>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ISchoolsServices, SchoolsService>();
+            services.AddTransient<IStudentsService, StudentsService>();
+            services.AddTransient<ITeachersService, TeachersService>();
+            services.AddTransient<ISubjectsService, SubjectsService>();
+            services.AddTransient<IParentsService, ParentsService>();
+            services.AddTransient<IFileManagementService, FileManagementService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly);
+            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly, typeof(SchoolInputModel).GetTypeInfo().Assembly);
 
             // Seed data on application startup
             using (var serviceScope = app.ApplicationServices.CreateScope())
@@ -91,6 +106,16 @@
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/Home/PageNotFound";
+                    await next();
+                }
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

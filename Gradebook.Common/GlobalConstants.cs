@@ -13,5 +13,13 @@
         public const string TeacherRoleName = "Teacher";
 
         public const string StudentRoleName = "Student";
+
+        public const char PrincipalIdPrefix = 'G';
+
+        public const char TeacherIdPrefix = 'T';
+
+        public const char StudentIdPrefix = 'S';
+
+        public const char ParentIdPrefix = 'P';
     }
 }
