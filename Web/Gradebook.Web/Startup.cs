@@ -80,6 +80,7 @@
             services.AddTransient<ITeachersService, TeachersService>();
             services.AddTransient<ISubjectsService, SubjectsService>();
             services.AddTransient<IParentsService, ParentsService>();
+            services.AddTransient<IClassesService, ClassesService>();
             services.AddTransient<IFileManagementService, FileManagementService>();
         }
 

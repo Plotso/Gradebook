@@ -153,11 +153,6 @@
                 return RedirectToAction(nameof(Index));
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(inputModel);
-            }
-
             try
             {
                 await _subjectsService.DeleteAsync(inputModel.Id);
@@ -203,6 +198,77 @@
             catch (Exception e)
             {
                 _logger.LogError(e, $"An exception occured during new parent record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        
+        public async Task<IActionResult> EditParent(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schools = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).ToList();
+            var students = _studentsService.GetAllBySchoolIds<StudentViewModel>(schools.Select(s => s.Id));
+            var parent = _parentsService.GetById<ParentInputModel>(id);
+            var inputModel = new ParentModifyInputModel
+            {
+                Id = id,
+                Students = students.Select(s => new SelectListItem($"{s.FirstName} {s.LastName} ({s.SchoolName})", s.Id.ToString())).ToList(),
+                Parent = parent
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditParent(ParentModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid || !inputModel.Parent.StudentIds.Any())
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _parentsService.EditAsync(inputModel);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student UPDATE operation for parent with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        
+        public IActionResult DeleteParent(int id)
+        {
+            var parent = _parentsService.GetById<ParentInputModel>(id);
+            var inputModel = new ParentModifyInputModel()
+            {
+                Id = id,
+                Parent = parent
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteParent(ParentModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await _parentsService.DeleteAsync(inputModel.Id);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student DELETE operation for parent with id {inputModel.Id}. Ex: {e.Message}");
                 return RedirectToAction("Error", "Home");
             }
         }
@@ -300,11 +366,6 @@
             if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
             {
                 return RedirectToAction(nameof(Index));
-            }
-            
-            if (!ModelState.IsValid)
-            {
-                return View(inputModel);
             }
 
             try
@@ -411,11 +472,6 @@
             if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
             {
                 return RedirectToAction(nameof(Index));
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(inputModel);
             }
 
             try

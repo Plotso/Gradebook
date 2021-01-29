@@ -17,12 +17,21 @@
     {
         private readonly IDeletableEntityRepository<Student> _studentsRepository;
         private readonly IDeletableEntityRepository<School> _schoolsRepository;
+        private readonly IDeletableEntityRepository<Parent> _parentRepository;
+        private readonly IDeletableEntityRepository<StudentParent> _studentParentsMappingRepository;
         private readonly IIdGeneratorService _idGeneratorService;
 
-        public StudentsService(IDeletableEntityRepository<Student> studentsRepository, IDeletableEntityRepository<School> schoolsRepository, IIdGeneratorService idGeneratorService)
+        public StudentsService(
+            IDeletableEntityRepository<Student> studentsRepository,
+            IDeletableEntityRepository<School> schoolsRepository,
+            IDeletableEntityRepository<Parent> parentRepository,
+            IDeletableEntityRepository<StudentParent> studentParentsMappingRepository,
+            IIdGeneratorService idGeneratorService)
         {
             _studentsRepository = studentsRepository;
             _schoolsRepository = schoolsRepository;
+            _parentRepository = parentRepository;
+            _studentParentsMappingRepository = studentParentsMappingRepository;
             _idGeneratorService = idGeneratorService;
         }
 
@@ -77,6 +86,24 @@
             var student = _studentsRepository.All().FirstOrDefault(s => s.Id == id);
             if (student != null)
             {
+                var parentIds = student.StudentParents.Select(sp => sp.ParentId).ToList();
+                foreach (var parentId in parentIds)
+                {
+                    var parent = _parentRepository.All().FirstOrDefault(p => p.Id == parentId);
+                    var parentStudentsCount = parent?.StudentParents.Count;
+                    if (parentStudentsCount == 1) // delete parent if current student is their only child with active account
+                    {
+                        _parentRepository.Delete(parent);
+                        await _parentRepository.SaveChangesAsync();
+                    }
+
+                    var mapping = _studentParentsMappingRepository.All()
+                        .FirstOrDefault(sp => sp.StudentId == id && sp.ParentId == parentId);
+                    _studentParentsMappingRepository.Delete(mapping);
+                }
+
+                await _studentParentsMappingRepository.SaveChangesAsync();
+
                 _studentsRepository.Delete(student);
                 await _studentsRepository.SaveChangesAsync();
             }
