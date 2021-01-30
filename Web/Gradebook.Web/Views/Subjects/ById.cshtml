@@ -6,7 +6,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @model Gradebook.Web.ViewModels.Subject.SubjectViewModel
 @{
-    ViewData["Title"] = "Subjects List";
+    ViewData["Title"] = "Subjects Details";
     var studentsCounter = 1;
     
     bool IsCurrentUserPrincipalOrAdmin()
@@ -17,8 +17,8 @@
     }
 }
 
-<h1>
-    Here you will see subject details
+<h1 class="center-custom">
+    Details about @Model.Name for students in year @Model.YearGrade
     @if (IsCurrentUserPrincipalOrAdmin())
     {
         <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditSubject" asp-route-id="@Model.Id" title="Edit subject">
@@ -29,6 +29,7 @@
         </a>
     }
 </h1>
+<hr>
 
 <h3>Name: @Model.Name</h3>
 <h3>Grade: @Model.YearGrade</h3>
