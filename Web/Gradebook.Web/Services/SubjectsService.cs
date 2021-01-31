@@ -36,7 +36,7 @@
             var subjects = studentSubjects.Select(s => s.Subject);
             return subjects.To<T>().ToList();
         }
-        
+
         public IEnumerable<T> GetAllByMultipleStudentIds<T>(List<int> studentIds)
         {
             var studentSubjects = _studentSubjectRepository.All().Where(s => studentIds.Contains(s.StudentId));
@@ -120,7 +120,7 @@
                     var allStudentsForSubject = _studentSubjectRepository.All().Where(s => s.SubjectId == id);
                     foreach (var studentSubjectPair in allStudentsForSubject)
                     {
-                        _studentSubjectRepository.Delete(studentSubjectPair);
+                        _studentSubjectRepository.Delete(studentSubjectPair);  // ToDo: Decide if grades/absences delete behaviour should be handled here as well
                     }
 
                     await _studentSubjectRepository.SaveChangesAsync();

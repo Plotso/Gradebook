@@ -14,12 +14,16 @@
         public int YearGrade { get; set; }
 
         public string SchoolYear { get; set; }
+        
+        public int TeacherId { get; set; }
 
         public string TeacherFirstName { get; set; }
 
         public string TeacherLastName { get; set; }
         
         public string TeacherSchoolName { get; set; }
+        
+        public string TeacherUniqueId { get; set; }
 
         public ICollection<StudentSubjectViewModel> StudentSubjects { get; set; }
 

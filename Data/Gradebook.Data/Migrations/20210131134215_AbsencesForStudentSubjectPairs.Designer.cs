@@ -4,14 +4,16 @@ using Gradebook.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gradebook.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210131134215_AbsencesForStudentSubjectPairs")]
+    partial class AbsencesForStudentSubjectPairs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,13 +43,10 @@ namespace Gradebook.Data.Migrations
                     b.Property<int>("Period")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentSubjectId")
+                    b.Property<int?>("StudentSubjectStudentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentSubjectStudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentSubjectSubjectId")
+                    b.Property<int?>("StudentSubjectSubjectId")
                         .HasColumnType("int");
 
                     b.Property<int>("TeacherId")
@@ -799,9 +798,7 @@ namespace Gradebook.Data.Migrations
 
                     b.HasOne("Gradebook.Data.Models.StudentSubject", "StudentSubject")
                         .WithMany("Absences")
-                        .HasForeignKey("StudentSubjectStudentId", "StudentSubjectSubjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("StudentSubjectStudentId", "StudentSubjectSubjectId");
                 });
 
             modelBuilder.Entity("Gradebook.Data.Models.Class", b =>

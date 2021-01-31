@@ -1,0 +1,44 @@
+﻿@using Gradebook.Data.Models.Grades
+@using Gradebook.Data.Models.Absences
+@model Gradebook.Web.Areas.Teacher.ViewModels.InputModels.AbsenceCreateInputModel
+@{
+    ViewData["Title"] = "Add Absence";
+}
+
+<h3 class="page-heading">Add new absence for @Model.StudentName</h3>
+<form asp-action="AddAbsence" method="post">
+    <div>
+        <label asp-for="Absence.Period"></label>
+        <select asp-for="Absence.Period" 
+                class="form-control" 
+                asp-items="Html.GetEnumSelectList<GradePeriod>()">
+            <option>Select period: </option>
+        </select>
+        <span asp-validation-for="Absence.Period" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Absence.Type"></label>
+        <select asp-for="Absence.Type" 
+                class="form-control" 
+                asp-items="Html.GetEnumSelectList<AbsenceType>()">
+            <option>Select absence type: </option>
+        </select>
+        <span asp-validation-for="Absence.Type" class="text-danger"></span>
+    </div>
+
+    <div>
+        <input type="hidden" asp-for="Absence.TeacherId"/>
+        <input type="hidden" asp-for="Absence.StudentId"/>
+        <input type="hidden" asp-for="Absence.SubjectId"/>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Add absence"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

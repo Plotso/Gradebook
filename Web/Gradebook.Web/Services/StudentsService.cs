@@ -104,6 +104,7 @@
 
                 await _studentParentsMappingRepository.SaveChangesAsync();
 
+                // ToDo: Decide if StudentSubject should be handled here as well
                 _studentsRepository.Delete(student);
                 await _studentsRepository.SaveChangesAsync();
             }

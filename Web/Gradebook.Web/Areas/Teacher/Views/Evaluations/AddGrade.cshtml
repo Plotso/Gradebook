@@ -1,0 +1,52 @@
+﻿@using Gradebook.Data.Models.Grades
+@model Gradebook.Web.Areas.Teacher.ViewModels.InputModels.GradeCreateInputModel
+@{
+    ViewData["Title"] = "Add Grade";
+}
+
+<h3 class="page-heading">Add new grade for @Model.StudentName</h3>
+<form asp-action="AddGrade" method="post">
+    <div>
+        <label asp-for="Grade.Value">Grade: </label>
+        <input asp-for="Grade.Value" class="form-control" aria-describedby="gradeDesc"/>
+        <span asp-validation-for="Grade.Value" class="text-danger"></span>
+        <small id="gradeDesc" class="form-text text-muted">
+            Note: Grade should be in the range between 2.00 and 6.00
+        </small>
+    </div>
+    
+    <div>
+        <label asp-for="Grade.Period"></label>
+        <select asp-for="Grade.Period" 
+                class="form-control" 
+                asp-items="Html.GetEnumSelectList<GradePeriod>()">
+            <option>Select period: </option>
+        </select>
+        <span asp-validation-for="Grade.Period" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Grade.Type"></label>
+        <select asp-for="Grade.Type" 
+                class="form-control" 
+                asp-items="Html.GetEnumSelectList<GradeType>()">
+            <option>Select grade type: </option>
+        </select>
+        <span asp-validation-for="Grade.Type" class="text-danger"></span>
+    </div>
+
+    <div>
+        <input type="hidden" asp-for="Grade.TeacherId"/>
+        <input type="hidden" asp-for="Grade.StudentId"/>
+        <input type="hidden" asp-for="Grade.SubjectId"/>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Add grade"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

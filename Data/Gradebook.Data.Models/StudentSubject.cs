@@ -1,6 +1,7 @@
 ﻿namespace Gradebook.Data.Models
 {
     using System.Collections.Generic;
+    using Absences;
     using Common.Models;
     using Grades;
 
@@ -15,5 +16,7 @@
         public virtual Subject Subject { get; set; }
 
         public virtual ICollection<Grade> Grades { get; set; } = new HashSet<Grade>();
+
+        public virtual ICollection<Absence> Absences { get; set; } = new HashSet<Absence>();
     }
 }
