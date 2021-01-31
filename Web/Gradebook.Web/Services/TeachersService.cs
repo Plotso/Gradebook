@@ -99,6 +99,10 @@
             var teacher = _teachersRepository.All().FirstOrDefault(s => s.Id == id);
             if (teacher != null)
             {
+                if (teacher.Class != null)
+                {
+                    throw new ArgumentException($"Sorry, we cannot delete a teacher that is currently leading a class. Please first assign another lead teacher for the class.");
+                }
                 _teachersRepository.Delete(teacher);
                 await _teachersRepository.SaveChangesAsync();
             }

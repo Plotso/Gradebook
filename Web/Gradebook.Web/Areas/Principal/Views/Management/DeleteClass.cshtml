@@ -1,0 +1,47 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.ClassModifyInputModel
+@{
+    ViewData["Title"] = "Delete class";
+}
+
+<h3 class="page-heading">Delete class</h3>
+<form asp-action="DeleteClass" method="post">
+    <div>
+            <label asp-for="Class.Letter">Class letter</label>
+            <input asp-for="Class.Letter" class="form-control" readonly/>
+            <span asp-validation-for="Class.Letter" class="text-danger"></span>
+        </div>
+        
+        <div>
+            <label asp-for="Class.Year">The year which the class will be: </label>
+            <input asp-for="Class.Year" class="form-control"  aria-describedby="yearGradeHelpBlock" readonly/>
+            <span asp-validation-for="Class.Year" class="text-danger"></span>
+            <small id="yearGradeHelpBlock" class="form-text text-muted">
+                Ex: If you type the number 3, the class will be at 3rd grade
+            </small>
+        </div>
+        
+        <div>
+            <label asp-for="Class.YearCreated">Which year has the class been registered: </label>
+            <input asp-for="Class.YearCreated" class="form-control" aria-describedby="schoolYearHelpBlock" readonly/>
+            <span asp-validation-for="Class.YearCreated" class="text-danger"></span>
+            <small id="schoolYearHelpBlock" class="form-text text-muted">
+                Note: If empty, current year would be used
+            </small>
+        </div>
+    
+    <div>
+        <label asp-for="Class.TeacherId">Teacher: </label>
+        <input asp-for="Class.TeacherId" class="form-control" aria-describedby="schoolYearHelpBlock" readonly/>
+        <span asp-validation-for="Class.TeacherId" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" name="onSubmitAction" class="btn btn-light" value="Cancel"/>
+        <input type="submit" name="onSubmitAction" class="btn btn-primary delete-record-btn" value="Delete Class" onclick="return confirm(`Are you sure you want to delete that class?`)"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

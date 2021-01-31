@@ -33,14 +33,12 @@
         </button>
         if (IsCurrentUserPrincipalOrAdmin())
         {
-            /* ToDo: Edit with pages for Class
-        <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditSubject" asp-route-id="@subject.Id" title="Edit subject">
-            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </a>
-        <a class="page-link-red" asp-area="Principal" asp-controller="Management" asp-action="DeleteSubject" asp-route-id="@subject.Id" title="Delete subject">
-            <i class="fa fa-trash-o" aria-hidden="true"></i>
-        </a>
-        */
+            <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditClass" asp-route-id="@schoolClass.Id" title="Edit class">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            </a>
+            <a class="page-link-red" asp-area="Principal" asp-controller="Management" asp-action="DeleteClass" asp-route-id="@schoolClass.Id" title="Delete class">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
         }
         <hr/>
     }
