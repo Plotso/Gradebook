@@ -12,6 +12,7 @@
     using ViewModels.InputModels;
     using Web.ViewModels;
     using Web.ViewModels.InputModels;
+    using Web.ViewModels.Subject;
 
     [Authorize(Roles = GlobalConstants.PrincipalRoleName + "," + GlobalConstants.AdministratorRoleName + "," + GlobalConstants.TeacherRoleName)]
     [Area("Teacher")]
@@ -21,17 +22,30 @@
         private readonly IAbsencesService _absencesService;
         private readonly IGradesService _gradesService;
         private readonly IStudentsService _studentsService;
+        private readonly ISubjectsService _subjectsService;
 
-        public EvaluationsController(ILogger<EvaluationsController> logger, IAbsencesService absencesService, IGradesService gradesService, IStudentsService studentsService)
+        public EvaluationsController(ILogger<EvaluationsController> logger, IAbsencesService absencesService, IGradesService gradesService, IStudentsService studentsService, ISubjectsService subjectsService)
         {
             _logger = logger;
             _absencesService = absencesService;
             _gradesService = gradesService;
             _studentsService = studentsService;
+            _subjectsService = subjectsService;
         }
     
         //ToDo: Add logic for Create, Edit, Delete Absences AND MARKS
         // ToDo: Add page where teacher can view marks and absences for a single student for a single subject (add validation for which teacher can see/edit which page)
+
+        public IActionResult StudentSubjectDetails(int studentId, int subjectId)
+        {
+            var viewModel = _subjectsService.GetStudentSubjectPair<StudentSubjectViewModel>(studentId, subjectId);
+            if (viewModel == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(viewModel);
+        }
         
         public async Task<IActionResult> AddGrade(int studentId, int subjectId, int teacherId)
         {

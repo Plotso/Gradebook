@@ -14,6 +14,8 @@
         public string StudentFirstName { get; set; }
 
         public string StudentLastName { get; set; }
+        
+        public string SubjectName { get; set; }
 
         public ICollection<GradeViewModel> Grades { get; set; }
 

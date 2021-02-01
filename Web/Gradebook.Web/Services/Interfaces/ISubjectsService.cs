@@ -24,5 +24,7 @@
         Task EditAsync(SubjectModifyInputModel modifiedModel);
 
         Task DeleteAsync(int id);
+
+        T GetStudentSubjectPair<T>(int studentId, int subjectId);
     }
 }

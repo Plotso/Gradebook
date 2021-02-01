@@ -1,0 +1,88 @@
+﻿@using Gradebook.Data.Models.Grades
+@using Gradebook.Data.Models.Absences
+@model Gradebook.Web.ViewModels.Subject.StudentSubjectViewModel
+@{
+    ViewData["Title"] = "Student details for subject";
+
+    string GetNumericAbsenceByType(AbsenceType type)
+    {
+        if (type == AbsenceType.OneThird)
+        {
+            return "1/3";
+        }
+        return "1";
+    }
+}
+
+<h3 class="page-heading">Grades and absences of @Model.StudentFullName in @Model.SubjectName</h3>
+
+<div>
+    <h5>
+        Grades:
+    </h5>
+    <p>
+        @if (Model.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
+        {
+            <span><b>First term grades:</b> </span>
+            @foreach (var grade in Model.GradesByPeriod[GradePeriod.FirstTerm].Where(g => g.Type == GradeType.Normal))
+            {
+                <span>@grade.Value (E) (D) | </span>
+            }
+            if (Model.GradesByPeriod[GradePeriod.FirstTerm].Any(g => g.Type == GradeType.Final))
+            {
+                <br>
+                <span>Final grade(s): </span>
+                @foreach (var grade in Model.GradesByPeriod[GradePeriod.FirstTerm].Where(g => g.Type == GradeType.Final))
+                {
+                    <span>@grade.Value (E) (D) | </span>
+                }
+            }
+            <br>
+        }
+        @if (Model.GradesByPeriod.ContainsKey(GradePeriod.SecondTerm))
+        {
+            <span><b>Second term grades:</b> </span>
+            @foreach (var grade in Model.GradesByPeriod[GradePeriod.SecondTerm].Where(g => g.Type == GradeType.Normal))
+            {
+                <span>@grade.Value (E) (D) | </span>
+            }
+            if (Model.GradesByPeriod[GradePeriod.SecondTerm].Any(g => g.Type == GradeType.Final))
+            {
+                <br>
+                <span>Final grade(s): </span>
+                @foreach (var grade in Model.GradesByPeriod[GradePeriod.SecondTerm].Where(g => g.Type == GradeType.Final))
+                {
+                    <span>@grade.Value (E) (D) | </span>
+                }
+            }
+        }
+    </p>
+</div>
+<div>
+    <h5>
+        Absences:
+    </h5>
+    <p>
+        @if (Model.Absences.Any(a => a.Period == AbsencePeriod.FirstTerm))
+        {
+            <span><b>First term absences (historically):</b> </span>
+            @foreach (var absence in Model.Absences.Where(a => a.Period == AbsencePeriod.FirstTerm))
+            {
+                <span>@GetNumericAbsenceByType(@absence.Type) (E) (D) | </span>
+            }
+            <br>
+        }
+        @if (Model.Absences.Any(a => a.Period == AbsencePeriod.SecondTerm))
+        {
+            <span><b>First term absences (historically):</b> </span>
+            @foreach (var absence in Model.Absences.Where(a => a.Period == AbsencePeriod.SecondTerm))
+            {
+                <span>@GetNumericAbsenceByType(@absence.Type) (E) (D) | </span>
+            }
+        }
+    </p>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

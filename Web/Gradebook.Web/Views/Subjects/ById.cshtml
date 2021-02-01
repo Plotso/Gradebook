@@ -77,6 +77,15 @@
             <th scope="row">@(studentsCounter++)</th>
             <td>
                 @studentSubject.StudentFullName
+                @if (IsCurrentUserRoleTeacherOrGreater() && (studentSubject.Grades.Any() || studentSubject.Absences.Any()))
+                {
+                    
+                    <button type="button" class="btn btn-outline-success">
+                        <a class="page-link-with-hover" asp-area="Teacher" asp-controller="Evaluations" asp-action="StudentSubjectDetails" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" title="Subject details">
+                            Edit Absences and Grades
+                        </a>
+                    </button>
+                }
             </td>
             <td>
                 @if (IsCurrentUserRoleTeacherOrGreater())

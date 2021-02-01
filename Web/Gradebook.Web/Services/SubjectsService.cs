@@ -130,5 +130,12 @@
                 await _subjectsRepository.SaveChangesAsync();
             }
         }
+
+        public T GetStudentSubjectPair<T>(int studentId, int subjectId)
+        {
+            var studentSubjects = _studentSubjectRepository.All()
+                .Where(s => s.StudentId == studentId && s.SubjectId == subjectId);
+            return studentSubjects.To<T>().FirstOrDefault();
+        }
     }
 }
