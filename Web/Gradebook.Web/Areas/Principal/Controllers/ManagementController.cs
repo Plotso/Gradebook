@@ -62,6 +62,43 @@
             return View();
         }
 
+        public async Task<IActionResult> AddClassToSubject()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schoolIds = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).Select(s => s.Id);
+            var classesInSchool = _classesService.GetAllByMultipleSchoolIds<ClassViewModel>(schoolIds.ToList());
+            var subjectsInSchool = _subjectsService.GetAllByMultipleSchoolIds<SubjectViewModel>(schoolIds.ToList());
+            var inputModel = new ClassSubjectCreateInputModel
+            {
+                Classes = classesInSchool.Select(c => new SelectListItem($"{c.Year}{c.Letter} ({c.Teacher.SchoolName})", c.Id.ToString())).ToList(),
+                Subjects = subjectsInSchool.Select(s => new SelectListItem($"{s.Name} ({s.TeacherSchoolName})({s.TeacherFullName})", s.Id.ToString())).ToList(),
+            };
+            return View(inputModel);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddClassToSubject(ClassSubjectCreateInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.ClassSubjectPair.ClassId.IsNullOrEmpty() || inputModel.ClassSubjectPair.SubjectId.IsNullOrEmpty())
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _subjectsService.AssignAllStudentsFromClassToSubject(inputModel.ClassSubjectPair);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during map between class with ID {inputModel.ClassSubjectPair.ClassId} and subject with ID {inputModel.ClassSubjectPair.SubjectId}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
         public async Task<IActionResult> CreateSubject()
         {
             var user = await _userManager.GetUserAsync(User);

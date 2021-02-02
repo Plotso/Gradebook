@@ -62,7 +62,17 @@
 
         public async Task EditAsync(GradeModifyInputModel modifiedModel)
         {
-            throw new System.NotImplementedException();
+            var grade = _gradesRepository.All().FirstOrDefault(g => g.Id == modifiedModel.Id);
+            if (grade != null)
+            {
+                var inputModel = modifiedModel.Grade;
+                grade.Value = inputModel.Value;
+                grade.Period = inputModel.Period;
+                grade.Type = inputModel.Type;
+
+                _gradesRepository.Update(grade);
+                await _gradesRepository.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)

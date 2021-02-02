@@ -47,7 +47,7 @@
             return View(viewModel);
         }
         
-        public async Task<IActionResult> AddGrade(int studentId, int subjectId, int teacherId)
+        public IActionResult AddGrade(int studentId, int subjectId, int teacherId)
         {
             var student = _studentsService.GetById<StudentViewModel>(studentId);
             var inputModel = new GradeCreateInputModel
@@ -86,7 +86,73 @@
             }
         }
 
-        public async Task<IActionResult> AddAbsence(int studentId, int subjectId, int teacherId)
+        public IActionResult EditGrade(int id)
+        {
+            var grade = _gradesService.GetById<GradeInputModel>(id);
+            var inputModel = new GradeModifyInputModel()
+            {
+                Id = id,
+                Grade = grade
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditGrade(GradeModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _gradesService.EditAsync(inputModel);
+
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student UPDATE operation for grade with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public IActionResult DeleteGrade(int id)
+        {
+            var grade = _gradesService.GetById<GradeInputModel>(id);
+            var inputModel = new GradeModifyInputModel()
+            {
+                Id = id,
+                Grade = grade
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteGrade(GradeModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });
+            }
+
+            try
+            {
+                await _gradesService.DeleteAsync(inputModel.Id);
+
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student DELETE operation for grade with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public IActionResult AddAbsence(int studentId, int subjectId, int teacherId)
         {
             var student = _studentsService.GetById<StudentViewModel>(studentId);
             var inputModel = new AbsenceCreateInputModel()
@@ -121,6 +187,72 @@
             catch (Exception e)
             {
                 _logger.LogError(e, $"An exception occured during new absence record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public IActionResult EditAbsence(int id)
+        {
+            var absence = _absencesService.GetById<AbsenceInputModel>(id);
+            var inputModel = new AbsenceModifyInputModel()
+            {
+                Id = id,
+                Absence = absence
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAbsence(AbsenceModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _absencesService.EditAsync(inputModel);
+
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student UPDATE operation for absence with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public IActionResult DeleteAbsence(int id)
+        {
+            var absence = _absencesService.GetById<AbsenceInputModel>(id);
+            var inputModel = new AbsenceModifyInputModel()
+            {
+                Id = id,
+                Absence = absence
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAbsence(AbsenceModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });
+            }
+
+            try
+            {
+                await _absencesService.DeleteAsync(inputModel.Id);
+
+                return RedirectToAction("SubjectsList", "Subjects", new { area = string.Empty });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student DELETE operation for absence with id {inputModel.Id}. Ex: {e.Message}");
                 return RedirectToAction("Error", "Home");
             }
         }

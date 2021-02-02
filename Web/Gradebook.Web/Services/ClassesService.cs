@@ -52,6 +52,12 @@
             return classes.To<T>();
         }
 
+        public IEnumerable<T> GetAllByMultipleSchoolIds<T>(List<int> schoolIds)
+        {
+            var classes = _classesRepository.All().Where(c => schoolIds.Contains(c.Teacher.SchoolId));
+            return classes.To<T>();
+        }
+
         public IEnumerable<T> GetAll<T>()
         {
             var classes = _classesRepository.All();

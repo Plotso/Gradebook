@@ -9,6 +9,8 @@
     using Data.Models;
     using Gradebook.Services.Mapping;
     using Interfaces;
+    using Microsoft.EntityFrameworkCore.Internal;
+    using ViewModels.Principal;
     using ViewModels.Subject;
 
     public class SubjectsService : ISubjectsService
@@ -16,12 +18,18 @@
         private readonly IDeletableEntityRepository<Subject> _subjectsRepository;
         private readonly IDeletableEntityRepository<StudentSubject> _studentSubjectRepository;
         private readonly IDeletableEntityRepository<Teacher> _teachersRepository;
+        private readonly IDeletableEntityRepository<Class> _classesRepository;
 
-        public SubjectsService(IDeletableEntityRepository<Subject> subjectsRepository, IDeletableEntityRepository<StudentSubject> studentSubjectRepository, IDeletableEntityRepository<Teacher> teachersRepository)
+        public SubjectsService(
+            IDeletableEntityRepository<Subject> subjectsRepository,
+            IDeletableEntityRepository<StudentSubject> studentSubjectRepository,
+            IDeletableEntityRepository<Teacher> teachersRepository,
+            IDeletableEntityRepository<Class> classesRepository)
         {
             _subjectsRepository = subjectsRepository;
             _studentSubjectRepository = studentSubjectRepository;
             _teachersRepository = teachersRepository;
+            _classesRepository = classesRepository;
         }
 
         public IEnumerable<T> GetAllByTeacherId<T>(int teacherId)
@@ -47,6 +55,12 @@
         public IEnumerable<T> GetAllBySchoolId<T>(int schoolId)
         {
             var subjects = _subjectsRepository.All().Where(s => s.Teacher.SchoolId == schoolId);
+            return subjects.To<T>().ToList();
+        }
+
+        public IEnumerable<T> GetAllByMultipleSchoolIds<T>(List<int> schoolIds)
+        {
+            var subjects = _subjectsRepository.All().Where(s => schoolIds.Contains(s.Teacher.SchoolId));
             return subjects.To<T>().ToList();
         }
 
@@ -136,6 +150,44 @@
             var studentSubjects = _studentSubjectRepository.All()
                 .Where(s => s.StudentId == studentId && s.SubjectId == subjectId);
             return studentSubjects.To<T>().FirstOrDefault();
+        }
+
+        public async Task AssignAllStudentsFromClassToSubject(ClassSubjectInputModel inputModel)
+        {
+            var subject = _subjectsRepository.All().FirstOrDefault(s => s.Id == int.Parse(inputModel.SubjectId));
+            if (subject != null)
+            {
+                var schoolClass = _classesRepository.All().FirstOrDefault(c => c.Id == int.Parse(inputModel.ClassId));
+                if (schoolClass != null)
+                {
+                    if (schoolClass.Teacher.SchoolId != subject.Teacher.SchoolId)
+                    {
+                        throw new ArgumentException($"Sorry, class with id {inputModel.ClassId} and subject with id {inputModel.SubjectId} are in different schools");
+                    }
+
+                    if (schoolClass.Students.Any())
+                    {
+                        foreach (var student in schoolClass.Students)
+                        {
+                            var studentSubjectPair = new StudentSubject
+                            {
+                                Student = student,
+                                Subject = subject
+                            };
+
+                            await _studentSubjectRepository.AddAsync(studentSubjectPair);
+                        }
+
+                        await _studentSubjectRepository.SaveChangesAsync();
+                    }
+
+                    return;
+                }
+
+                throw new ArgumentException($"Sorry, we couldn't find class with id {inputModel.ClassId}");
+            }
+
+            throw new ArgumentException($"Sorry, we couldn't find subject with id {inputModel.SubjectId}");
         }
     }
 }

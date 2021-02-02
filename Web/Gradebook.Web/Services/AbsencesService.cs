@@ -62,7 +62,16 @@
 
         public async Task EditAsync(AbsenceModifyInputModel modifiedModel)
         {
-            throw new System.NotImplementedException();
+            var absence = _absencesRepository.All().FirstOrDefault(a => a.Id == modifiedModel.Id);
+            if (absence != null)
+            {
+                var inputModel = modifiedModel.Absence;
+                absence.Period = inputModel.Period;
+                absence.Type = inputModel.Type;
+
+                _absencesRepository.Update(absence);
+                await _absencesRepository.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)

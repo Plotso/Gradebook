@@ -5,6 +5,8 @@
 
     public class AbsenceViewModel : IMapFrom<Absence>
     {
+        public int Id { get; set; }
+        
         public AbsencePeriod Period { get; set; }
 
         public AbsenceType Type { get; set; }

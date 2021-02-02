@@ -15,6 +15,8 @@
 
         IEnumerable<T> GetAllBySchoolId<T>(int schoolId);
 
+        IEnumerable<T> GetAllByMultipleSchoolIds<T>(List<int> schoolIds);
+
         IEnumerable<T> GetAll<T>();
 
         T GetById<T>(int id);
