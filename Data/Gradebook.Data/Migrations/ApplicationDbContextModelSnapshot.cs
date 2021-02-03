@@ -19,6 +19,54 @@ namespace Gradebook.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Gradebook.Data.Models.Absences.Absence", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentSubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentSubjectStudentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentSubjectSubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TeacherId");
+
+                    b.HasIndex("StudentSubjectStudentId", "StudentSubjectSubjectId");
+
+                    b.ToTable("Absences");
+                });
+
             modelBuilder.Entity("Gradebook.Data.Models.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -168,7 +216,7 @@ namespace Gradebook.Data.Migrations
                     b.Property<int?>("SchoolId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TeacherId")
+                    b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
                     b.Property<int>("Year")
@@ -184,7 +232,8 @@ namespace Gradebook.Data.Migrations
                     b.HasIndex("SchoolId");
 
                     b.HasIndex("TeacherId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[TeacherId] IS NOT NULL");
 
                     b.ToTable("Classes");
                 });
@@ -740,6 +789,21 @@ namespace Gradebook.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Gradebook.Data.Models.Absences.Absence", b =>
+                {
+                    b.HasOne("Gradebook.Data.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Gradebook.Data.Models.StudentSubject", "StudentSubject")
+                        .WithMany("Absences")
+                        .HasForeignKey("StudentSubjectStudentId", "StudentSubjectSubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Gradebook.Data.Models.Class", b =>
                 {
                     b.HasOne("Gradebook.Data.Models.School", null)
@@ -748,9 +812,7 @@ namespace Gradebook.Data.Migrations
 
                     b.HasOne("Gradebook.Data.Models.Teacher", "Teacher")
                         .WithOne("Class")
-                        .HasForeignKey("Gradebook.Data.Models.Class", "TeacherId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("Gradebook.Data.Models.Class", "TeacherId");
                 });
 
             modelBuilder.Entity("Gradebook.Data.Models.Grades.Grade", b =>

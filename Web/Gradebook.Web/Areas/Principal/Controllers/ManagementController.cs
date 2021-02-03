@@ -18,6 +18,7 @@
     using ViewModels.InputModels;
     using Web.ViewModels;
     using Web.ViewModels.Administration;
+    using Web.ViewModels.Classes;
     using Web.ViewModels.Home;
     using Web.ViewModels.InputModels;
     using Web.ViewModels.Principal;
@@ -34,6 +35,7 @@
         private readonly ITeachersService _teachersService;
         private readonly ISubjectsService _subjectsService;
         private readonly IParentsService _parentsService;
+        private readonly IClassesService _classesService;
 
         public ManagementController(
             ILogger<ManagementController> logger,
@@ -42,7 +44,8 @@
             IStudentsService studentsService,
             ITeachersService teachersService,
             ISubjectsService subjectsService,
-            IParentsService parentsService)
+            IParentsService parentsService,
+            IClassesService classesService)
         {
             _logger = logger;
             _userManager = userManager;
@@ -51,11 +54,49 @@
             _teachersService = teachersService;
             _subjectsService = subjectsService;
             _parentsService = parentsService;
+            _classesService = classesService;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> AddClassToSubject()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schoolIds = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).Select(s => s.Id);
+            var classesInSchool = _classesService.GetAllByMultipleSchoolIds<ClassViewModel>(schoolIds.ToList());
+            var subjectsInSchool = _subjectsService.GetAllByMultipleSchoolIds<SubjectViewModel>(schoolIds.ToList());
+            var inputModel = new ClassSubjectCreateInputModel
+            {
+                Classes = classesInSchool.Select(c => new SelectListItem($"{c.Year}{c.Letter} ({c.Teacher.SchoolName})", c.Id.ToString())).ToList(),
+                Subjects = subjectsInSchool.Select(s => new SelectListItem($"{s.Name} ({s.TeacherSchoolName})({s.TeacherFullName})", s.Id.ToString())).ToList(),
+            };
+            return View(inputModel);
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddClassToSubject(ClassSubjectCreateInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.ClassSubjectPair.ClassId.IsNullOrEmpty() || inputModel.ClassSubjectPair.SubjectId.IsNullOrEmpty())
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _subjectsService.AssignAllStudentsFromClassToSubject(inputModel.ClassSubjectPair);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during map between class with ID {inputModel.ClassSubjectPair.ClassId} and subject with ID {inputModel.ClassSubjectPair.SubjectId}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         public async Task<IActionResult> CreateSubject()
@@ -66,7 +107,7 @@
             var teachersInSchools = _teachersService.GetAllBySchoolIds<TeacherViewModel>(schoolIds);
             var inputModel = new SubjectCreateInputModel
             {
-                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName}", t.Id.ToString())).ToList()
+                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName} ({t.SchoolName})", t.Id.ToString())).ToList()
             };
             return View(inputModel);
         }
@@ -104,7 +145,7 @@
             var inputModel = new SubjectModifyInputModel()
             {
                 Id = id,
-                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName}", t.Id.ToString())).ToList(),
+                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName} ({t.SchoolName})", t.Id.ToString())).ToList(),
                 Subject = subject
             };
             return View(inputModel);
@@ -153,11 +194,6 @@
                 return RedirectToAction(nameof(Index));
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(inputModel);
-            }
-
             try
             {
                 await _subjectsService.DeleteAsync(inputModel.Id);
@@ -167,6 +203,114 @@
             catch (Exception e)
             {
                 _logger.LogError(e, $"An exception occured during student DELETE operation for subject with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public async Task<IActionResult> CreateClass()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schoolIds = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).Select(s => s.Id);
+            var teachersInSchools = _teachersService.GetAllBySchoolIds<TeacherViewModel>(schoolIds);
+            var inputModel = new ClassCreateInputModel
+            {
+                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName} ({t.SchoolName})", t.Id.ToString())).ToList()
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateClass(ClassCreateInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.Class.TeacherId.IsNullOrEmpty())
+            {
+                //ToDo: in case of null teacher, return appropriate message or add model validation?
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _classesService.CreateAsync(inputModel.Class);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during new class record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public async Task<IActionResult> EditClass(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schoolIds = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).Select(s => s.Id);
+            var teachersInSchools = _teachersService.GetAllBySchoolIds<TeacherViewModel>(schoolIds);
+            var schoolClass = _classesService.GetById<ClassInputModel>(id);
+            var inputModel = new ClassModifyInputModel()
+            {
+                Id = id,
+                Teachers = teachersInSchools.Select(t => new SelectListItem($"{t.FirstName} {t.LastName} ({t.SchoolName})", t.Id.ToString())).ToList(),
+                Class = schoolClass
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditClass(ClassModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid || inputModel.Class.TeacherId.IsNullOrEmpty())
+            {
+                //ToDo: in case of null teacher, return appropriate message or add model validation?
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _classesService.EditAsync(inputModel);
+
+                return RedirectToAction("ById", "Classes", new { area = string.Empty, id = inputModel.Id });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student UPDATE operation for class with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public IActionResult DeleteClass(int id)
+        {
+            var schoolClass = _classesService.GetById<ClassInputModel>(id);
+            var inputModel = new ClassModifyInputModel()
+            {
+                Id = id,
+                Class = schoolClass
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteClass(ClassModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await _classesService.DeleteAsync(inputModel.Id);
+
+                return RedirectToAction("ClassesList", "Classes", new { area = string.Empty });  // string is empty in order to exit current principal area
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student DELETE operation for class with id {inputModel.Id}. Ex: {e.Message}");
                 return RedirectToAction("Error", "Home");
             }
         }
@@ -203,6 +347,77 @@
             catch (Exception e)
             {
                 _logger.LogError(e, $"An exception occured during new parent record creation. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        
+        public async Task<IActionResult> EditParent(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var isAdmin = await IsAdmin();
+            var schools = _schoolsServices.GetAllByUserId<SchoolViewModel>(user?.UniqueGradebookId, isAdmin).ToList();
+            var students = _studentsService.GetAllBySchoolIds<StudentViewModel>(schools.Select(s => s.Id));
+            var parent = _parentsService.GetById<ParentInputModel>(id);
+            var inputModel = new ParentModifyInputModel
+            {
+                Id = id,
+                Students = students.Select(s => new SelectListItem($"{s.FirstName} {s.LastName} ({s.SchoolName})", s.Id.ToString())).ToList(),
+                Parent = parent
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditParent(ParentModifyInputModel inputModel)
+        {
+            if (!ModelState.IsValid || !inputModel.Parent.StudentIds.Any())
+            {
+                return View(inputModel);
+            }
+
+            try
+            {
+                await _parentsService.EditAsync(inputModel);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student UPDATE operation for parent with id {inputModel.Id}. Ex: {e.Message}");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+        
+        public IActionResult DeleteParent(int id)
+        {
+            var parent = _parentsService.GetById<ParentInputModel>(id);
+            var inputModel = new ParentModifyInputModel()
+            {
+                Id = id,
+                Parent = parent
+            };
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteParent(ParentModifyInputModel inputModel, string onSubmitAction)
+        {
+            if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await _parentsService.DeleteAsync(inputModel.Id);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An exception occured during student DELETE operation for parent with id {inputModel.Id}. Ex: {e.Message}");
                 return RedirectToAction("Error", "Home");
             }
         }
@@ -300,11 +515,6 @@
             if (onSubmitAction.IsNullOrEmpty() || onSubmitAction == "Cancel")
             {
                 return RedirectToAction(nameof(Index));
-            }
-            
-            if (!ModelState.IsValid)
-            {
-                return View(inputModel);
             }
 
             try
@@ -413,7 +623,7 @@
                 return RedirectToAction(nameof(Index));
             }
 
-            if (!ModelState.IsValid)
+            if (!inputModel.Teacher.SchoolId.IsNullOrEmpty())
             {
                 return View(inputModel);
             }

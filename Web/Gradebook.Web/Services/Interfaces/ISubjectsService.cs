@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Areas.Principal.ViewModels.InputModels;
+    using ViewModels.Principal;
     using ViewModels.Subject;
 
     public interface ISubjectsService
@@ -15,6 +16,8 @@
 
         IEnumerable<T> GetAllBySchoolId<T>(int schoolId);
 
+        IEnumerable<T> GetAllByMultipleSchoolIds<T>(List<int> schoolIds);
+
         IEnumerable<T> GetAll<T>();
 
         T GetById<T>(int id);
@@ -24,5 +27,9 @@
         Task EditAsync(SubjectModifyInputModel modifiedModel);
 
         Task DeleteAsync(int id);
+
+        T GetStudentSubjectPair<T>(int studentId, int subjectId);
+
+        Task AssignAllStudentsFromClassToSubject(ClassSubjectInputModel inputModel);
     }
 }

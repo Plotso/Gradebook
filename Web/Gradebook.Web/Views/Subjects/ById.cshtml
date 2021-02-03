@@ -1,24 +1,43 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Gradebook.Data.Models
 @using Gradebook.Common
+@using Gradebook.Data.Models.Absences
 @using Gradebook.Data.Models.Grades
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @model Gradebook.Web.ViewModels.Subject.SubjectViewModel
 @{
-    ViewData["Title"] = "Subjects List";
+    ViewData["Title"] = "Subjects Details";
     var studentsCounter = 1;
-    
+
     bool IsCurrentUserPrincipalOrAdmin()
     {
         var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
         var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
         return roles.Any(r => r == GlobalConstants.AdministratorRoleName || r == GlobalConstants.PrincipalRoleName);
     }
+
+    bool IsCurrentUserRoleTeacherOrGreater()
+    {
+        if (!IsCurrentUserPrincipalOrAdmin())
+        {
+            var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+            var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+            if (roles.Any(r => r == GlobalConstants.TeacherRoleName))
+            {
+                if (user.UniqueGradebookId == @Model.TeacherUniqueId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
+    }
 }
 
-<h1>
-    Here you will see subject details
+<h1 class="center-custom">
+    Details about @Model.Name for students in year @Model.YearGrade
     @if (IsCurrentUserPrincipalOrAdmin())
     {
         <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditSubject" asp-route-id="@Model.Id" title="Edit subject">
@@ -28,7 +47,11 @@
             <i class="fa fa-trash-o" aria-hidden="true"></i>
         </a>
     }
+    <a class="page-link-red" asp-action="SubjectsList" asp-route-id="@Model.Id" title="Go to classes list">
+        <i class="fa fa-list" aria-hidden="true"></i>
+    </a>
 </h1>
+<hr>
 
 <h3>Name: @Model.Name</h3>
 <h3>Grade: @Model.YearGrade</h3>
@@ -42,28 +65,85 @@
     <tr>
         <th scope="col">Student number</th>
         <th scope="col">Student Name</th>
+        <th scope="col">Absences</th>
         <th scope="col">Term grades</th>
         <th scope="col">Final grade(s)</th>
     </tr>
     </thead>
     <tbody>
-        @foreach (var studentSubject in @Model.StudentSubjects) //ToDo: Add logic for filtration by term
-        {
-            <tr>
-                <th scope="row">@(studentsCounter++)</th>
-                <td>
-                    @studentSubject.StudentFullName
-                </td>
-                <td>
-                    @{
-                        var normalGrades = string.Join(" ", studentSubject.Grades.Where(g => g.Type == GradeType.Normal));
+    @foreach (var studentSubject in @Model.StudentSubjects) //ToDo: Add logic for filtration by term
+    {
+        <tr>
+            <th scope="row">@(studentsCounter++)</th>
+            <td>
+                @studentSubject.StudentFullName
+                @if (IsCurrentUserRoleTeacherOrGreater() && (studentSubject.Grades.Any() || studentSubject.Absences.Any()))
+                {
+                    
+                    <button type="button" class="btn btn-outline-success">
+                        <a class="page-link-with-hover" asp-area="Teacher" asp-controller="Evaluations" asp-action="StudentSubjectDetails" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" title="Subject details">
+                            Edit Absences and Grades
+                        </a>
+                    </button>
+                }
+            </td>
+            <td>
+                @if (IsCurrentUserRoleTeacherOrGreater())
+                {
+                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddAbsence" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add absence">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                    </a>
+                }
+                @{
+                    var absences = "0";
+                    if (studentSubject.AbsencesByPeriod.ContainsKey(AbsencePeriod.FirstTerm))
+                    {
+                        absences = studentSubject.AbsencesByPeriod[AbsencePeriod.FirstTerm];
                     }
-                    @normalGrades
-                </td>
-                <td>
-                    @string.Join(" ", studentSubject.Grades.Where(g => g.Type == GradeType.Final))
-                </td>
-            </tr>
-        }
+                }
+                @absences
+            </td>
+            <td>
+                @if (IsCurrentUserRoleTeacherOrGreater())
+                {
+                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                    </a>
+                }
+                @{
+                    var normalGrades = "";
+                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
+                    {
+                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.FirstTerm];
+                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Normal))
+                        {
+                            normalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Normal).Select(g => g.Value));
+                        }
+                    }
+                }
+                @normalGrades
+            </td>
+            <td>
+                @if (IsCurrentUserRoleTeacherOrGreater())
+                {
+                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                    </a>
+                }
+                @{
+                    var finalGrades = "";
+                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
+                    {
+                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.FirstTerm];
+                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Final))
+                        {
+                            finalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Final).Select(g => g.Value));
+                        }
+                    }
+                }
+                @finalGrades
+            </td>
+        </tr>
+    }
     </tbody>
 </table>

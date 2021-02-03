@@ -10,6 +10,7 @@
     using Gradebook.Data.Models;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
+    using Models.Absences;
     using Models.Grades;
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
@@ -43,6 +44,8 @@
         public DbSet<Subject> Subjects { get; set; }
 
         public DbSet<Grade> Grades { get; set; }
+
+        public DbSet<Absence> Absences { get; set; }
 
         public DbSet<StudentSubject> StudentSubjects { get; set; }
 

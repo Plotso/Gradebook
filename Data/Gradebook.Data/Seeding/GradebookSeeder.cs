@@ -7,6 +7,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Models;
+    using Models.Absences;
     using Models.Grades;
     using Services.Data;
     using Services.Data.Interfaces;
@@ -26,6 +27,7 @@
             await SeedStudents(dbContext);
             await SeedSubjects(dbContext);
             await SeedGrades(dbContext);
+            await SeedAbsences(dbContext);
         }
 
         private async Task SeedPrincipals(ApplicationDbContext dbContext)
@@ -183,6 +185,30 @@
                 };
 
                 await dbContext.Grades.AddAsync(grade);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        private async Task SeedAbsences(ApplicationDbContext dbContext)
+        {
+            if (dbContext.Absences.Any())
+            {
+                return;
+            }
+
+            var firstDbSubject = await dbContext.Subjects.FirstOrDefaultAsync(s => s.StudentSubjects.Any());
+
+            if (firstDbSubject != null)
+            {
+                var absence = new Absence()
+                {
+                    Teacher = firstDbSubject.Teacher,
+                    Period = AbsencePeriod.FirstTerm,
+                    Type = AbsenceType.OneThird,
+                    StudentSubject = firstDbSubject.StudentSubjects.FirstOrDefault()
+                };
+
+                await dbContext.Absences.AddAsync(absence);
                 await dbContext.SaveChangesAsync();
             }
         }

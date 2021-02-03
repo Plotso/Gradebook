@@ -44,6 +44,7 @@
                     await _usersService.DeleteByUniqueIdAsync(userUniqueId);
                 }
 
+                // ToDo: Add logic for classes deletion, then the logic for students above would be obsolete
                 _schoolsRepository.Delete(school);
                 await _schoolsRepository.SaveChangesAsync();
             }

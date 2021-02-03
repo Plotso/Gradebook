@@ -1,0 +1,36 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.ClassSubjectCreateInputModel
+@{
+    ViewData["Title"] = "Assign class member to a subject";
+}
+
+<h3 class="page-heading">Assign all class members to a given subject</h3>
+<form asp-action="AddClassToSubject" method="post">
+    <div>
+        <label asp-for="ClassSubjectPair.ClassId"></label>
+        <select asp-for="ClassSubjectPair.ClassId" 
+                class="form-control" 
+                asp-items="Model.Classes">
+            <option>Select class from list: </option>
+        </select>
+        <span asp-validation-for="ClassSubjectPair.ClassId" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="ClassSubjectPair.SubjectId"></label>
+        <select asp-for="ClassSubjectPair.SubjectId" 
+                class="form-control" 
+                asp-items="Model.Subjects">
+            <option>Select subject from list: </option>
+        </select>
+        <span asp-validation-for="ClassSubjectPair.SubjectId" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Assign students class to subject"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

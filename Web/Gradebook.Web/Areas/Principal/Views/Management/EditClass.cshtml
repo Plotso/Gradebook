@@ -1,0 +1,50 @@
+﻿@model Gradebook.Web.Areas.Principal.ViewModels.InputModels.ClassModifyInputModel
+@{
+    ViewData["Title"] = "Edit Class";
+}
+
+<h3 class="page-heading">Edit class</h3>
+<form asp-action="EditClass" method="post">
+    <div>
+        <label asp-for="Class.Letter">Class letter</label>
+        <input asp-for="Class.Letter" class="form-control"/>
+        <span asp-validation-for="Class.Letter" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Class.Year">The year which the class will be: </label>
+        <input asp-for="Class.Year" class="form-control"  aria-describedby="yearGradeHelpBlock"/>
+        <span asp-validation-for="Class.Year" class="text-danger"></span>
+        <small id="yearGradeHelpBlock" class="form-text text-muted">
+            Ex: If you type the number 3, the class will be at 3rd grade
+        </small>
+    </div>
+    
+    <div>
+        <label asp-for="Class.YearCreated">Which year has the class been registered: </label>
+        <input asp-for="Class.YearCreated" class="form-control" aria-describedby="schoolYearHelpBlock"/>
+        <span asp-validation-for="Class.YearCreated" class="text-danger"></span>
+        <small id="schoolYearHelpBlock" class="form-text text-muted">
+            Ex: 2012
+        </small>
+    </div>
+    
+    <div>
+        <label asp-for="Class.TeacherId"></label>
+        <select asp-for="Class.TeacherId" 
+                class="form-control" 
+                asp-items="Model.Teachers">
+            <option>Select teacher from list: </option>
+        </select>
+        <span asp-validation-for="Class.TeacherId" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" class="btn btn-primary create-record-btn" value="Edit Class"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

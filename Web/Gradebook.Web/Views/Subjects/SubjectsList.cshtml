@@ -15,30 +15,32 @@
     }
 }
 
-<h1>Here you will see list of subjects for currently logged user</h1>
-
-@foreach (var subject in @Model.Subjects)
+@foreach (var subjectBySchool in @Model.SubjectsBySchool)
 {
-    <h3>Name: @subject.Name</h3>
-    <h3>Grade: @subject.YearGrade</h3>
-    <h3>School Year: @subject.SchoolYear</h3>
-    <h3>Students Count: @subject.StudentSubjects.Count()</h3>
-    <h3>Teacher: @subject.TeacherFullName</h3>
-    <h3>School: @subject.TeacherSchoolName</h3>
-    
-    <button type="button" class="btn btn-outline-success">
-        <a class="page-link-with-hover" asp-action="ById" asp-route-id="@subject.Id" title="Add student">
-            Details
-        </a>
-    </button>
-    if (IsCurrentUserPrincipalOrAdmin())
+    <h1 class="center-custom">Your list of subjects in @subjectBySchool.Key</h1>
+    @foreach (var subject in subjectBySchool.Value.OrderBy(c => c.YearGrade).ThenBy(c => c.YearGrade))
     {
-        <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditSubject" asp-route-id="@subject.Id" title="Edit subject">
-            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </a>
-        <a class="page-link-red" asp-area="Principal" asp-controller="Management" asp-action="DeleteSubject" asp-route-id="@subject.Id" title="Delete subject">
-            <i class="fa fa-trash-o" aria-hidden="true"></i>
-        </a>
+        <p><b>Name:</b> @subject.Name</p>
+        <p><b>Grade:</b> @subject.YearGrade</p>
+        <p><b>School Year:</b> @subject.SchoolYear</p>
+        <p><b>Students Count:</b> @subject.StudentSubjects.Count()</p>
+        <p><b>Teacher:</b> @subject.TeacherFullName</p>
+        <p><b>School:</b> @subject.TeacherSchoolName</p>
+    
+        <button type="button" class="btn btn-outline-success">
+            <a class="page-link-with-hover" asp-action="ById" asp-route-id="@subject.Id" title="Subject details">
+                Details
+            </a>
+        </button>
+        if (IsCurrentUserPrincipalOrAdmin())
+        {
+            <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditSubject" asp-route-id="@subject.Id" title="Edit subject">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            </a>
+            <a class="page-link-red" asp-area="Principal" asp-controller="Management" asp-action="DeleteSubject" asp-route-id="@subject.Id" title="Delete subject">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+        }
+        <hr/>
     }
-    <hr/>
 }

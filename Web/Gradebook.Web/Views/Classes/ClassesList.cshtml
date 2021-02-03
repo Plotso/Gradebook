@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Gradebook.Data.Models
+@using Gradebook.Common
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@model Gradebook.Web.ViewModels.Classes.ClassesListViewModel
+@{
+    ViewData["Title"] = "Class List";
+
+    bool IsCurrentUserPrincipalOrAdmin()
+    {
+        var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+        var roles = UserManager.GetRolesAsync(user).GetAwaiter().GetResult();
+        return roles.Any(r => r == GlobalConstants.AdministratorRoleName || r == GlobalConstants.PrincipalRoleName);
+    }
+}
+
+@foreach (var classesBySchool in @Model.ClassesBySchool)
+{
+    <h1 class="center-custom">Your visible classes in @classesBySchool.Key</h1>
+    @foreach (var schoolClass in classesBySchool.Value.OrderBy(c => c.Year).ThenBy(c => c.Letter))
+    {
+        <h3>Letter: @schoolClass.Letter</h3>
+        <h3>Year: @schoolClass.Year</h3>
+        <h3>Year Create: @schoolClass.YearCreated</h3>
+        <h3>Students Count: @schoolClass.Students.Count</h3>
+        <h3>Teacher: @schoolClass.TeacherFullName</h3>
+
+        <button type="button" class="btn btn-outline-success">
+            <a class="page-link-with-hover" asp-action="ById" asp-route-id="@schoolClass.Id" title="Class details">
+                Details
+            </a>
+        </button>
+        if (IsCurrentUserPrincipalOrAdmin())
+        {
+            <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="EditClass" asp-route-id="@schoolClass.Id" title="Edit class">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            </a>
+            <a class="page-link-red" asp-area="Principal" asp-controller="Management" asp-action="DeleteClass" asp-route-id="@schoolClass.Id" title="Delete class">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+        }
+        <hr/>
+    }
+}

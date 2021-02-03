@@ -1,6 +1,7 @@
 ﻿namespace Gradebook.Web.ViewModels
 {
     using System;
+    using System.Collections.Generic;
     using Data.Models;
     using Services.Mapping;
 
@@ -19,5 +20,7 @@
         public string PersonalIdentificationNumber { get; set; }
         
         public string SchoolName { get; set; }
+        
+        public ICollection<StudentParentViewModel> StudentParents { get; set; }
     }
 }

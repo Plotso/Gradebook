@@ -10,5 +10,11 @@
         Task<T> CreateParentAsync<T>(ParentInputModel inputModel);
 
         List<int> GetStudentIdsByParentUniqueId(string uniqueId);
+        
+        T GetById<T>(int id);
+        
+        Task EditAsync(ParentModifyInputModel modifiedModel);
+
+        Task DeleteAsync(int id);
     }
 }

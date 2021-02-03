@@ -16,6 +16,8 @@
         <input asp-for="Teacher.LastName" class="form-control" readonly/>
         <span asp-validation-for="Teacher.LastName" class="text-danger"></span>
     </div>
+    
+    <h6 class="text-danger">Teacher WON'T be deleted if he is currently leading a class. You will be redirected to this page until he is free of class duty.</h6>
 
     <hr/>
     <div class="center-group">

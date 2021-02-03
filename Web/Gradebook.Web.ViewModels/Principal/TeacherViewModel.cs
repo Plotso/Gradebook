@@ -12,5 +12,9 @@
         public string LastName { get; set; }
 
         public string Email { get; set; }
+        
+        public int SchoolId { get; set; }
+        
+        public string SchoolName { get; set; }
     }
 }

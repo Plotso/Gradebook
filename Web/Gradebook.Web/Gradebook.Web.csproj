@@ -42,8 +42,4 @@
     <ProjectReference Include="..\Gradebook.Web.Infrastructure\Gradebook.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\Gradebook.Web.ViewModels\Gradebook.Web.ViewModels.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Teacher\Controllers" />
-  </ItemGroup>
 </Project>

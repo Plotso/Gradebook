@@ -21,6 +21,11 @@ Settings: @Model.SettingsCount
     </a>
 </button>
 <button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="CreateParent" title="Add parent">
+        Add new parent 
+    </a>
+</button>
+<button type="button" class="btn btn-outline-success">
     <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="CreateTeacher" title="Add teacher">
         Add new teacher 
     </a>
@@ -31,7 +36,29 @@ Settings: @Model.SettingsCount
     </a>
 </button>
 <button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="CreateClass" title="Add class">
+        Add new class 
+    </a>
+</button>
+<button type="button" class="btn btn-outline-success">
     <a class="page-link-green" asp-controller="Administration" asp-action="CreateSchool" title="Add school">
         Add new school & principal 
     </a>
 </button>
+<button type="button" class="btn btn-outline-success">
+    <a class="page-link-green" asp-area="Principal" asp-controller="Management" asp-action="AddClassToSubject" title="Assign students to subject">
+        Assign class to subject
+    </a>
+</button>
+
+<h2>Group pages: </h2>
+<button type="button" class="btn btn-light">
+        <a class="page-link-with-hover" asp-area="" asp-controller="Subjects" asp-action="SubjectsList" title="List of subjects">
+            Go to subjects list 
+        </a>
+    </button>
+    <button type="button" class="btn btn-light">
+        <a class="page-link-with-hover" asp-area="" asp-controller="Classes" asp-action="ClassesList" title="List of classes">
+            Go to classes list 
+        </a>
+    </button>

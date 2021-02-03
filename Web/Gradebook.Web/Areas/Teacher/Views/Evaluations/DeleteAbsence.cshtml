@@ -1,0 +1,29 @@
+﻿@model Gradebook.Web.Areas.Teacher.ViewModels.InputModels.AbsenceModifyInputModel
+@{
+    ViewData["Title"] = "Delete Absence";
+}
+
+<h3 class="page-heading">Delete absence</h3>
+<form asp-action="DeleteAbsence" method="post">
+    <div>
+        <label asp-for="Absence.Period"></label>
+        <input asp-for="Absence.Period" class="form-control" readonly/>
+        <span asp-validation-for="Absence.Period" class="text-danger"></span>
+    </div>
+    
+    <div>
+        <label asp-for="Absence.Type"></label>
+        <input asp-for="Absence.Type" class="form-control" readonly/>
+        <span asp-validation-for="Absence.Type" class="text-danger"></span>
+    </div>
+
+    <hr/>
+    <div class="center-group">
+        <input type="submit" name="onSubmitAction" class="btn btn-light" value="Cancel"/>
+        <input type="submit" name="onSubmitAction" class="btn btn-primary delete-record-btn" value="Delete Absence" onclick="return confirm(`Are you sure you want to delete that absence?`)"/>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
