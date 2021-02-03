@@ -2,7 +2,11 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.IO;
+    using System.Linq;
     using Data.Models;
+    using Data.Models.Grades;
+    using Microsoft.EntityFrameworkCore.Internal;
     using Services.Mapping;
 
     public class ClassViewModel : IMapFrom<Class>
@@ -20,5 +24,29 @@
         public ICollection<StudentViewModel> Students { get; set; }
         
         public string TeacherFullName => $"{Teacher.FirstName} {Teacher.LastName}";
+
+        public decimal? AverageGradeFirstTerm => GetAverageGradeByPeriod(GradePeriod.FirstTerm);
+        
+        public decimal? AverageGradeSecondTerm => GetAverageGradeByPeriod(GradePeriod.SecondTerm);
+
+        private decimal? GetAverageGradeByPeriod(GradePeriod period)
+        {
+            if (period == GradePeriod.FirstTerm)
+            {
+                if (Students.Any(s => s.AverageGradeFirstTerm != null))
+                {
+                    return Students.Where(s => s.AverageGradeFirstTerm != null).Average(s => s.AverageGradeFirstTerm);
+                }
+            }
+            else
+            {
+                if (Students.Any(s => s.AverageGradeSecondTerm != null))
+                {
+                    return Students.Where(s => s.AverageGradeSecondTerm != null).Average(s => s.AverageGradeSecondTerm);
+                }
+            }
+
+            return null;
+        }
     }
 }
