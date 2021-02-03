@@ -18,7 +18,8 @@
 
         public SeleniumServerFactory()
         {
-            ClientOptions.BaseAddress = new Uri("https://localhost"); // will follow redirects by default
+            ClientOptions.BaseAddress = new Uri("https://localhostTEST"); // will follow redirects by default
+            ClientOptions.BaseAddress = new Uri("https://localhostTEST123"); // will follow redirects by default
             CreateServer(CreateWebHostBuilder());
 
             process = new Process
