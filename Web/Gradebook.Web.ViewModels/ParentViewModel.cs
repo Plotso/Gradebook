@@ -17,6 +17,8 @@
 
         public string Email { get; set; }
         
+        public string UniqueId { get; set; }
+        
         public ICollection<StudentParentViewModel> StudentParents { get; set; }
     }
 }

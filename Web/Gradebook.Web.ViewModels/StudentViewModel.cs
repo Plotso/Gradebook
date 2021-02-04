@@ -28,6 +28,8 @@
         public ICollection<StudentParentViewModel> StudentParents { get; set; }
         
         public ICollection<StudentSubjectViewModel> StudentSubjects { get; set; }
+        
+        public string UniqueId { get; set; }
 
         public decimal? AverageGradeFirstTerm => GetAverageGradeByPeriod(GradePeriod.FirstTerm);
         
