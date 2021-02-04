@@ -87,6 +87,11 @@
             return View();
         }
 
+        public IActionResult UnauthorizedAttempt()
+        {
+            return View();
+        }
+
         public IActionResult ConfirmCreated(ConfirmCreatedViewModel viewModel)
         {
             return View(viewModel);

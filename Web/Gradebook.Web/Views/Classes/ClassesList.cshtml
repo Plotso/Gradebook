@@ -20,11 +20,13 @@
     <h1 class="center-custom">Your visible classes in @classesBySchool.Key</h1>
     @foreach (var schoolClass in classesBySchool.Value.OrderBy(c => c.Year).ThenBy(c => c.Letter))
     {
-        <h3>Letter: @schoolClass.Letter</h3>
-        <h3>Year: @schoolClass.Year</h3>
-        <h3>Year Create: @schoolClass.YearCreated</h3>
-        <h3>Students Count: @schoolClass.Students.Count</h3>
-        <h3>Teacher: @schoolClass.TeacherFullName</h3>
+        <p><b>Letter:</b> @schoolClass.Letter</p>
+        <p><b>Year:</b> @schoolClass.Year</p>
+        <p><b>Year Create:</b> @schoolClass.YearCreated</p>
+        <p><b>Students Count:</b> @schoolClass.Students.Count</p>
+        <p><b>Teacher:</b> @schoolClass.TeacherFullName</p>
+        <p><b>Average first term grade:</b> @{ var avgGradeFirstTerm = @schoolClass.AverageGradeFirstTerm?.ToString() ?? "n/a";} @avgGradeFirstTerm</p>
+        <p><b>Average second term grade:</b> @{ var avgGradeSecondTerm = @schoolClass.AverageGradeSecondTerm?.ToString() ?? "n/a";} @avgGradeSecondTerm</p>
 
         <button type="button" class="btn btn-outline-success">
             <a class="page-link-with-hover" asp-action="ById" asp-route-id="@schoolClass.Id" title="Class details">

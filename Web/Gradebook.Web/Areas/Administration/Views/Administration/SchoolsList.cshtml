@@ -15,6 +15,8 @@
           <p> <span class="user-specific-info">Principal:</span> @school.PrincipalFirstName @school.PrincipalFirstName</p>
           <p> <span class="user-specific-info">Address:</span> @school.Address</p>
           <p> <span class="user-specific-info">Total classes:</span> @school.Classes.Count()</p>
+          <p> <span class="user-specific-info">Average first term grade:</span> @{ var avgGradeFirstTerm = @school.AverageGradeFirstTerm?.ToString() ?? "n/a";} @avgGradeFirstTerm</p>
+          <p> <span class="user-specific-info">Average second term grade:</span>  @{ var avgGradeSecondTerm = @school.AverageGradeSecondTerm?.ToString() ?? "n/a";} @avgGradeSecondTerm</p>
           <a class="page-link-green" asp-action="EditSchool" asp-route-id="@school.Id" title="Edit school">
               <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
           </a>
