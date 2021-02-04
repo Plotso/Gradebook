@@ -60,7 +60,7 @@
             var viewModel = _classesService.GetById<ClassViewModel>(id);
             if (!await IsUserAuthorizedToViewPage(viewModel))
             {
-                return Unauthorized();
+                return RedirectToAction("UnauthorizedAttempt", "Home");
             }
             
             return View(viewModel);
