@@ -62,8 +62,8 @@ Those commands are required in order for the project to correctly build the data
 
 ## Contribution
 
-* **Ilian Ganchosov** - *One man army / project creator* - [Plotso](https://github.com/Plotso)
-* **Kristiyan Knizharov** - *One man army / project creator* - [KristiyanKnizharov](https://github.com/KristiyanKnizharov)
+* **Ilian Ganchosov** - [Plotso](https://github.com/Plotso)
+* **Kristiyan Knizharov** - [KristiyanKnizharov](https://github.com/KristiyanKnizharov)
 
 ## License
 
