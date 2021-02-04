@@ -18,8 +18,11 @@
     public class AbsencesServiceTests
     {
         private const int StudentSubjectId = 13;
+        private const int StudentCorrectId = 5;
+        private const int SubjectCorrectId = 4;
         private const int StudentYearBorn = 13;
-        private const int TestTeacherDBId = 2;
+        private const int TestTeacherDBId = 10;
+        private const int TestTeacherUncorrectId = 2;
         private const int TestAbsenceDBId = 4;
         private const string TestTeacherUniqueID = "T021ppzz";
 
@@ -44,39 +47,97 @@
         }
 
         [Test]
-        public async Task CreateAbsenceAsync(AbsenceInputModel inputModel)
+        public async Task CreateAbsenceAsync()
         {
-            await _absencesService.CreateAsync(inputModel);
-            _absencesRepositoryMock.Object.All().FirstOrDefault().Should().Be(inputModel);
+            OneTimeSetUp();
+            var newAbsence = new AbsenceInputModel()
+            {
+                Period = AbsencePeriod.FirstTerm,
+                Type = AbsenceType.Full,
+                TeacherId = TestTeacherDBId,
+                StudentId = StudentCorrectId,
+                SubjectId = SubjectCorrectId,
+            };
+
+            await _absencesService.CreateAsync(newAbsence);
+            _absencesRepositoryMock.Object.All().Count().Should().Be(1);
         }
 
         [Test]
-        public async Task DeleteAbsenceAsync(int id)
-        {
-            OneTimeSetUp();
-
-            await _absencesService.DeleteAsync(TestTeacherDBId);
-            var expected = 0;
-
-            _absencesRepositoryMock.Object.AllAsNoTracking().Count().Should().Be(expected);
-
-        }
-
-        private void OneTimeSetUp()
+        public async Task CreateAbsenceAsync_WithoutPairOfStudentSubject_ShouldThrowException()
         {
             _teachersRepositoryMock.Setup(t => t.All())
-                   .Returns(new List<Teacher>
-                   {
+                 .Returns(new List<Teacher> { }.AsQueryable());
+            var newAbsence = new AbsenceInputModel()
+            {
+                StudentId = StudentSubjectId,
+                Period = AbsencePeriod.FirstTerm,
+                Type = AbsenceType.Full,
+                TeacherId = TestTeacherDBId,
+                SubjectId = 10,
+            };
+            try
+            {
+                await _absencesService.CreateAsync(newAbsence);
+            }
+            catch (ArgumentException ae)
+            {
+                ae.Message.Should().Be($"Sorry, we couldn't find pair of student ({StudentSubjectId}) and subject({10})");
+            }
+        }
+
+        [Test]
+        public async Task CreateAbsenceAsync_WithoutTeacherId_ShouldThrowException()
+        {
+            OneTimeSetUp();
+            var newAbsence = new AbsenceInputModel()
+            {
+                StudentId = StudentCorrectId,
+                Period = AbsencePeriod.FirstTerm,
+                Type = AbsenceType.Full,
+                TeacherId = TestTeacherUncorrectId,
+                SubjectId = SubjectCorrectId,
+            };
+            try
+            {
+                await _absencesService.CreateAsync(newAbsence);
+            }
+            catch (ArgumentException ae)
+            {
+                ae.Message.Should().Be($"Sorry, we couldn't find teacher with id {TestTeacherUncorrectId}");
+            }
+        }
+
+
+
+    [Test]
+    [TestCase(TestAbsenceDBId)]
+    public async Task DeleteAbsenceAsync(int id)
+    {
+        OneTimeSetUp();
+
+        await _absencesService.DeleteAsync(TestTeacherDBId);
+        var expected = 0;
+
+        _absencesRepositoryMock.Object.AllAsNoTracking().Count().Should().Be(expected);
+
+    }
+
+    private void OneTimeSetUp()
+    {
+        _teachersRepositoryMock.Setup(t => t.All())
+               .Returns(new List<Teacher>
+               {
                     new Teacher
                     {
                         Id = TestTeacherDBId,
                         UniqueId = TestTeacherUniqueID
                     }
-                   }.AsQueryable());
+               }.AsQueryable());
 
-            _studentRepositoryMock.Setup(t => t.All())
-                .Returns(new List<Student>
-                {
+        _studentRepositoryMock.Setup(t => t.All())
+            .Returns(new List<Student>
+            {
                     new Student
                     {
                         FirstName = "Foncho",
@@ -86,22 +147,22 @@
                         BirthDate = DateTime.UtcNow.AddYears(-StudentYearBorn),
                         PersonalIdentificationNumber = "9521110000",
                     }
-                }.AsQueryable());
+            }.AsQueryable());
 
-            _studentSubjectsRepositoryMock.Setup(s => s.All())
-                .Returns(new List<StudentSubject>
-                {
+        _studentSubjectsRepositoryMock.Setup(s => s.All())
+            .Returns(new List<StudentSubject>
+            {
                     new StudentSubject()
                     {
                         StudentId = 5,
                         SubjectId = 4,
                         CreatedOn = DateTime.UtcNow,
                     }
-                }.AsQueryable());
+            }.AsQueryable());
 
-            _absencesRepositoryMock.Setup(a => a.All())
-                .Returns(new List<Absence>
-                {
+        _absencesRepositoryMock.Setup(a => a.All())
+            .Returns(new List<Absence>
+            {
                     new Absence()
                     {
                         Id = TestAbsenceDBId,
@@ -112,7 +173,7 @@
                         StudentSubjectId = StudentSubjectId,
                         StudentSubject = _studentSubjectsRepositoryMock.Object.All().FirstOrDefault(),
                     }
-                }.AsQueryable());
-        }
+            }.AsQueryable());
     }
+}
 }
