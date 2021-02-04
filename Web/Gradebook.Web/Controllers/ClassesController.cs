@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Common;
     using Data.Models;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Services.Interfaces;
@@ -38,6 +39,7 @@
             _parentsService = parentsService;
         }
         
+        [Authorize]
         public async Task<IActionResult> ClassesList()
         {
             var viewModel = new ClassesListViewModel();
@@ -52,9 +54,15 @@
             return View(viewModel);
         }
 
-        public IActionResult ById(int id)
+        [Authorize]
+        public async Task<IActionResult> ById(int id)
         {
             var viewModel = _classesService.GetById<ClassViewModel>(id);
+            if (!await IsUserAuthorizedToViewPage(viewModel))
+            {
+                return RedirectToAction("UnauthorizedAttempt", "Home");
+            }
+            
             return View(viewModel);
         }
         
@@ -109,6 +117,23 @@
             }
 
             return _classesService.GetAll<ClassViewModel>();
+        }
+
+        private async Task<bool> IsUserAuthorizedToViewPage(ClassViewModel viewModel)
+        {
+            if (User.IsInRole(GlobalConstants.AdministratorRoleName) ||
+                User.IsInRole(GlobalConstants.PrincipalRoleName) ||
+                User.IsInRole(GlobalConstants.TeacherRoleName))
+            {
+                return true;
+            }
+            
+            var user = await _userManager.GetUserAsync(User);
+            var userUniqueId = user.UniqueGradebookId;
+
+            return viewModel.Teacher.UniqueId == userUniqueId ||
+                   viewModel.Students.Any(s => s.UniqueId == userUniqueId) ||
+                   viewModel.Students.Any(s => s.StudentParents.Any(sp => sp.Parent.UniqueId == userUniqueId));
         }
     }
 }
