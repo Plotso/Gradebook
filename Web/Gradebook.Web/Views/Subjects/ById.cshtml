@@ -8,7 +8,8 @@
 @model Gradebook.Web.ViewModels.Subject.SubjectViewModel
 @{
     ViewData["Title"] = "Subjects Details";
-    var studentsCounter = 1;
+    var secondTermCounter = 1;
+    var firstTermCounter = 1;
 
     bool IsCurrentUserPrincipalOrAdmin()
     {
@@ -53,97 +54,213 @@
 </h1>
 <hr>
 
-<h3>Name: @Model.Name</h3>
-<h3>Grade: @Model.YearGrade</h3>
-<h3>School Year: @Model.SchoolYear</h3>
-<h3>Students Count: @Model.StudentSubjects.Count()</h3>
-<h3>Teacher: @Model.TeacherFullName</h3>
-<h3>School: @Model.TeacherSchoolName</h3>
+<p><b>Name:</b> @Model.Name</p>
+<p><b>Grade:</b> @Model.YearGrade</p>
+<p><b>School Year:</b> @Model.SchoolYear</p>
+<p><b>Students Count:</b> @Model.StudentSubjects.Count()</p>
+<p><b>Teacher:</b> @Model.TeacherFullName</p>
+<p><b>School:</b> @Model.TeacherSchoolName</p>
 
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th scope="col">Student number</th>
-        <th scope="col">Student Name</th>
-        <th scope="col">Absences</th>
-        <th scope="col">Term grades</th>
-        <th scope="col">Final grade(s)</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var studentSubject in @Model.StudentSubjects) //ToDo: Add logic for filtration by term
-    {
-        <tr>
-            <th scope="row">@(studentsCounter++)</th>
-            <td>
-                @studentSubject.StudentFullName
-                @if (IsCurrentUserRoleTeacherOrGreater() && (studentSubject.Grades.Any() || studentSubject.Absences.Any()))
-                {
-                    
-                    <button type="button" class="btn btn-outline-success">
-                        <a class="page-link-with-hover" asp-area="Teacher" asp-controller="Evaluations" asp-action="StudentSubjectDetails" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" title="Subject details">
-                            Edit Absences and Grades
-                        </a>
-                    </button>
-                }
-            </td>
-            <td>
-                @if (IsCurrentUserRoleTeacherOrGreater())
-                {
-                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddAbsence" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add absence">
-                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                    </a>
-                }
-                @{
-                    var absences = "0";
-                    if (studentSubject.AbsencesByPeriod.ContainsKey(AbsencePeriod.FirstTerm))
+<h5 class="page-heading">Below you can see the grades and absences for each student per term</h5>
+
+<hr>
+
+<div class="row">
+    <div class="col-4">
+        <div class="list-group" id="list-tab" role="tablist">
+            <a class="list-group-item list-group-item-action active" id="list-first-term-list" data-toggle="list" href="#list-first-term" role="tab" aria-controls="first-term"> First </a>
+            <a class="list-group-item list-group-item-action" id="list-second-term-list" data-toggle="list" href="#list-second-term" role="tab" aria-controls="second-term"> Second </a>
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="list-first-term" role="tabpanel" aria-labelledby="list-first-term-list">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">Student number</th>
+                        <th scope="col">Student Name</th>
+                        <th scope="col">Absences</th>
+                        <th scope="col">Term grades</th>
+                        <th scope="col">Final grade(s)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var studentSubject in @Model.StudentSubjects) //ToDo: Add logic for filtration by term
                     {
-                        absences = studentSubject.AbsencesByPeriod[AbsencePeriod.FirstTerm];
+                        <tr>
+                            <th scope="row">@(firstTermCounter++)</th>
+                            <td>
+                                @studentSubject.StudentFullName
+                                @if (IsCurrentUserRoleTeacherOrGreater() && (studentSubject.Grades.Any() || studentSubject.Absences.Any()))
+                                {
+                                    
+                                    <button type="button" class="btn btn-outline-success">
+                                        <a class="page-link-with-hover" asp-area="Teacher" asp-controller="Evaluations" asp-action="StudentSubjectDetails" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" title="Subject details">
+                                            Edit Absences and Grades
+                                        </a>
+                                    </button>
+                                }
+                            </td>
+                            <td>
+                                @if (IsCurrentUserRoleTeacherOrGreater())
+                                {
+                                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddAbsence" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add absence">
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @{
+                                    var absences = "0";
+                                    if (studentSubject.AbsencesByPeriod.ContainsKey(AbsencePeriod.FirstTerm))
+                                    {
+                                        absences = studentSubject.AbsencesByPeriod[AbsencePeriod.FirstTerm];
+                                    }
+                                }
+                                @absences
+                            </td>
+                            <td>
+                                @if (IsCurrentUserRoleTeacherOrGreater())
+                                {
+                                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @{
+                                    var normalGrades = "";
+                                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
+                                    {
+                                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.FirstTerm];
+                                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Normal))
+                                        {
+                                            normalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Normal).Select(g => g.Value));
+                                        }
+                                    }
+                                }
+                                @normalGrades
+                            </td>
+                            <td>
+                                @if (IsCurrentUserRoleTeacherOrGreater())
+                                {
+                                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @{
+                                    var finalGrades = "";
+                                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
+                                    {
+                                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.FirstTerm];
+                                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Final))
+                                        {
+                                            finalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Final).Select(g => g.Value));
+                                        }
+                                    }
+                                }
+                                @finalGrades
+                            </td>
+                        </tr>
                     }
-                }
-                @absences
-            </td>
-            <td>
-                @if (IsCurrentUserRoleTeacherOrGreater())
-                {
-                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
-                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                    </a>
-                }
-                @{
-                    var normalGrades = "";
-                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane fade" id="list-second-term" role="tabpanel" aria-labelledby="list-second-term-list">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">Student number</th>
+                        <th scope="col">Student Name</th>
+                        <th scope="col">Absences</th>
+                        <th scope="col">Term grades</th>
+                        <th scope="col">Final grade(s)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var studentSubject in @Model.StudentSubjects) //ToDo: Add logic for filtration by term
                     {
-                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.FirstTerm];
-                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Normal))
-                        {
-                            normalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Normal).Select(g => g.Value));
-                        }
+                        <tr>
+                            <th scope="row">@(secondTermCounter++)</th>
+                            <td>
+                                @studentSubject.StudentFullName
+                                @if (IsCurrentUserRoleTeacherOrGreater() && (studentSubject.Grades.Any() || studentSubject.Absences.Any()))
+                                {
+                                    
+                                    <button type="button" class="btn btn-outline-success">
+                                        <a class="page-link-with-hover" asp-area="Teacher" asp-controller="Evaluations" asp-action="StudentSubjectDetails" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" title="Subject details">
+                                            Edit Absences and Grades
+                                        </a>
+                                    </button>
+                                }
+                            </td>
+                            <td>
+                                @if (IsCurrentUserRoleTeacherOrGreater())
+                                {
+                                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddAbsence" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add absence">
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @{
+                                    var absences = "0";
+                                    if (studentSubject.AbsencesByPeriod.ContainsKey(AbsencePeriod.SecondTerm))
+                                    {
+                                        absences = studentSubject.AbsencesByPeriod[AbsencePeriod.SecondTerm];
+                                    }
+                                }
+                                @absences
+                            </td>
+                            <td>
+                                @if (IsCurrentUserRoleTeacherOrGreater())
+                                {
+                                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @{
+                                    var normalGrades = "";
+                                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.SecondTerm))
+                                    {
+                                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.SecondTerm];
+                                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Normal))
+                                        {
+                                            normalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Normal).Select(g => g.Value));
+                                        }
+                                    }
+                                }
+                                @normalGrades
+                            </td>
+                            <td>
+                                @if (IsCurrentUserRoleTeacherOrGreater())
+                                {
+                                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    </a>
+                                }
+                                @{
+                                    var finalGrades = "";
+                                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.SecondTerm))
+                                    {
+                                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.SecondTerm];
+                                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Final))
+                                        {
+                                            finalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Final).Select(g => g.Value));
+                                        }
+                                    }
+                                }
+                                @finalGrades
+                            </td>
+                        </tr>
                     }
-                }
-                @normalGrades
-            </td>
-            <td>
-                @if (IsCurrentUserRoleTeacherOrGreater())
-                {
-                    <a class="page-link-green text-left" asp-area="Teacher" asp-controller="Evaluations" asp-action="AddGrade" asp-route-studentId="@studentSubject.StudentId" asp-route-subjectId="@Model.Id" asp-route-teacherId="@Model.TeacherId" title="Add grade">
-                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                    </a>
-                }
-                @{
-                    var finalGrades = "";
-                    if (studentSubject.GradesByPeriod.ContainsKey(GradePeriod.FirstTerm))
-                    {
-                        var gradesPerPeriod = studentSubject.GradesByPeriod[GradePeriod.FirstTerm];
-                        if (gradesPerPeriod.Any(g => g.Type == GradeType.Final))
-                        {
-                            finalGrades = string.Join("| ", gradesPerPeriod.Where(g => g.Type == GradeType.Final).Select(g => g.Value));
-                        }
-                    }
-                }
-                @finalGrades
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('#myList a').on('click', function (e) {
+                e.preventDefault()
+                $(this).tab('show')
+            })
+    </script>
+}
