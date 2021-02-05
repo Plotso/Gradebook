@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using Common;
-    using Common.Models;
+
+    using Gradebook.Data.Common.Models;
 
     public class Student : BasePersonModel
     {
