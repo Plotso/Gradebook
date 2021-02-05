@@ -4,15 +4,16 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Areas.Principal.ViewModels.InputModels;
-    using Data.Common.Models;
+
+    using Gradebook.Data.Common.Models;
     using Gradebook.Data.Common.Repositories;
-    using Data.Models;
+    using Gradebook.Data.Models;
     using Gradebook.Services.Data.Interfaces;
     using Gradebook.Services.Mapping;
-    using Interfaces;
+    using Gradebook.Web.Areas.Principal.ViewModels.InputModels;
+    using Gradebook.Web.Services.Interfaces;
+    using Gradebook.Web.ViewModels.InputModels;
     using Microsoft.EntityFrameworkCore.Internal;
-    using ViewModels.InputModels;
 
     public class ParentsService : IParentsService
     {

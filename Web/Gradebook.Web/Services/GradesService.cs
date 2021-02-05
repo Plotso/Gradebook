@@ -3,13 +3,14 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Areas.Teacher.ViewModels.InputModels;
-    using Data.Common.Repositories;
-    using Data.Models;
-    using Data.Models.Grades;
+
+    using Gradebook.Data.Common.Repositories;
+    using Gradebook.Data.Models;
+    using Gradebook.Data.Models.Grades;
     using Gradebook.Services.Mapping;
-    using Interfaces;
-    using ViewModels.InputModels;
+    using Gradebook.Web.Areas.Teacher.ViewModels.InputModels;
+    using Gradebook.Web.Services.Interfaces;
+    using Gradebook.Web.ViewModels.InputModels;
 
     public class GradesService : IGradesService
     {

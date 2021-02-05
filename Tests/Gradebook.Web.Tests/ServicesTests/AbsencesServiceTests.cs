@@ -1,18 +1,20 @@
 ﻿namespace Gradebook.Web.Tests.ServicesTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     using FluentAssertions;
     using Gradebook.Data.Common.Repositories;
     using Gradebook.Data.Models;
     using Gradebook.Data.Models.Absences;
+    using Gradebook.Web.Areas.Teacher.ViewModels.InputModels;
     using Gradebook.Web.Services;
     using Gradebook.Web.Services.Interfaces;
     using Gradebook.Web.ViewModels.InputModels;
     using Moq;
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     [TestFixture]
     public class AbsencesServiceTests
@@ -108,23 +110,40 @@
             }
         }
 
-
-
-    [Test]
-    [TestCase(TestAbsenceDBId)]
-    public async Task DeleteAbsenceAsync(int id)
-    {
+        [Test]
+        [TestCase(TestAbsenceDBId)]
+        public async Task DeleteAbsenceAsync(int id)
+        {
         OneTimeSetUp();
 
         await _absencesService.DeleteAsync(TestTeacherDBId);
         var expected = 0;
 
         _absencesRepositoryMock.Object.AllAsNoTracking().Count().Should().Be(expected);
+        }
 
-    }
+        [Test]
+        public async Task EditAbsenceAsyncTest_HappyPath()
+        {
+            OneTimeSetUp();
+            var absence = _absencesRepositoryMock.Object.All().FirstOrDefault();
+            var newAbsence = new AbsenceModifyInputModel()
+            {
+                Id = absence.Id,
+                Absence = new AbsenceInputModel() 
+                {
+                    StudentId = absence.StudentSubject.StudentId,
+                    Period = AbsencePeriod.SecondTerm,
+                    Type = AbsenceType.OneThird,
+                },
+            };
 
-    private void OneTimeSetUp()
-    {
+            await _absencesService.EditAsync(newAbsence);
+            absence.Should().NotBe(newAbsence);
+        }
+
+        private void OneTimeSetUp()
+        {
         _teachersRepositoryMock.Setup(t => t.All())
                .Returns(new List<Teacher>
                {
@@ -174,6 +193,6 @@
                         StudentSubject = _studentSubjectsRepositoryMock.Object.All().FirstOrDefault(),
                     }
             }.AsQueryable());
+        }
     }
-}
 }
